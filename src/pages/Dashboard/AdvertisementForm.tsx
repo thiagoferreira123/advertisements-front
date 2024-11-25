@@ -16,6 +16,7 @@ interface FormValues {
   locations: string[];
   categories: string[];
   public: string[];
+  traits: string[];
 }
 
 const AdvertisementForm: React.FC = () => {
@@ -31,6 +32,7 @@ const AdvertisementForm: React.FC = () => {
     locations: [],
     categories: [],
     public: [],
+    traits: []
   };
 
   const validationSchema = Yup.object().shape({
@@ -44,8 +46,9 @@ const AdvertisementForm: React.FC = () => {
     locations: Yup.array().required('Localização é obrigatória'),
     categories: Yup.array().required('Categorias são obrigatórias'),
     public: Yup.array().required('Público é obrigatório'),
+    traits: Yup.array().required('Traços é obrigatório'),
   });
-  
+
   const onSubmit = (values: FormValues) => {
     console.log('Form submitted', values);
   };
@@ -61,7 +64,7 @@ const AdvertisementForm: React.FC = () => {
           <Row className="mb-3 g-3">
             <Col md="12">
               <Form.Group className="form-group position-relative tooltip-end-top">
-                <Form.Label  className='fw-bold'>Titulo do anúncio</Form.Label>
+                <Form.Label className='fw-bold'>Titulo do anúncio</Form.Label>
                 <Form.Control
                   type="text"
                   name="title"
@@ -72,6 +75,21 @@ const AdvertisementForm: React.FC = () => {
                 <Form.Control.Feedback type="invalid">{errors.title}</Form.Control.Feedback>
               </Form.Group>
             </Col>
+
+            <Col md="12">
+              <Form.Group className="form-group position-relative tooltip-end-top">
+                <Form.Label className='fw-bold'>Fotos</Form.Label>
+                <p>Dropzone do broker aqui</p>
+              </Form.Group>
+            </Col>
+
+            <Col md="12">
+              <Form.Group className="form-group position-relative tooltip-end-top">
+                <Form.Label className='fw-bold'>Vídeos</Form.Label>
+                <p>Dropzone do broker aqui</p>
+              </Form.Group>
+            </Col>
+
             <Col md="12">
               <Form.Group className="form-group position-relative tooltip-end-top">
                 <Form.Label className='fw-bold'>Descrição</Form.Label>
@@ -88,7 +106,7 @@ const AdvertisementForm: React.FC = () => {
             </Col>
             <Col md="6">
               <Form.Group className="form-group position-relative tooltip-end-top">
-                <Form.Label  className='fw-bold'>Estado</Form.Label>
+                <Form.Label className='fw-bold'>Estado</Form.Label>
                 <Form.Control
                   type="text"
                   name="state"
@@ -101,7 +119,7 @@ const AdvertisementForm: React.FC = () => {
             </Col>
             <Col md="6">
               <Form.Group className="form-group position-relative tooltip-end-top">
-                <Form.Label  className='fw-bold'>Cidade</Form.Label>
+                <Form.Label className='fw-bold'>Cidade</Form.Label>
                 <Form.Control
                   type="text"
                   name="city"
@@ -117,7 +135,7 @@ const AdvertisementForm: React.FC = () => {
           <Row className="mb-3 g-3">
             <Col md="4">
               <Form.Group className="form-group position-relative tooltip-end-top">
-                <Form.Label  className='fw-bold'>Disponibilidade de horário</Form.Label>
+                <Form.Label className='fw-bold'>Disponibilidade de horário</Form.Label>
                 <Form.Control
                   type="text"
                   name="availability"
@@ -131,7 +149,7 @@ const AdvertisementForm: React.FC = () => {
             </Col>
             <Col md="4">
               <Form.Group className="form-group position-relative tooltip-end-top">
-                <Form.Label  className='fw-bold'>Valor R$ (A combinar, deixe 0)</Form.Label>
+                <Form.Label className='fw-bold'>Valor R$ (A combinar, deixe 0)</Form.Label>
                 <Form.Control
                   type="number"
                   name="price"
@@ -144,7 +162,7 @@ const AdvertisementForm: React.FC = () => {
             </Col>
             <Col md="4">
               <Form.Group className="form-group position-relative tooltip-end-top">
-                <Form.Label  className='fw-bold'>Idade</Form.Label>
+                <Form.Label className='fw-bold'>Idade</Form.Label>
                 <Form.Control
                   type="number"
                   name="age"
@@ -160,8 +178,8 @@ const AdvertisementForm: React.FC = () => {
           <Row className="mb-3 g-3">
             <Col md="12">
               <Form.Group>
-                <Form.Label  className='fw-bold'>Locais de atendimento</Form.Label>
-                {['Casa', 'Hotel', 'Meu local'].map((option) => (
+                <Form.Label className='fw-bold'>Locais de atendimento</Form.Label>
+                {['Casa', 'Consultório', 'Meu local'].map((option) => (
                   <Form.Check
                     key={option}
                     label={option}
@@ -176,8 +194,8 @@ const AdvertisementForm: React.FC = () => {
             </Col>
             <Col md="12">
               <Form.Group>
-                <Form.Label  className='fw-bold'>Categoria</Form.Label>
-                {['Homem', 'Mulher', 'Travesti'].map((option) => (
+                <Form.Label className='fw-bold'>Categoria</Form.Label>
+                {['Homem', 'Mulher', 'Crianças'].map((option) => (
                   <Form.Check
                     key={option}
                     label={option}
@@ -192,7 +210,7 @@ const AdvertisementForm: React.FC = () => {
             </Col>
             <Col md="12">
               <Form.Group>
-                <Form.Label  className='fw-bold'>Público</Form.Label>
+                <Form.Label className='fw-bold'>Público</Form.Label>
                 {['Homens', 'Mulheres', 'Casal'].map((option) => (
                   <Form.Check
                     key={option}
@@ -204,6 +222,22 @@ const AdvertisementForm: React.FC = () => {
                   />
                 ))}
                 <Form.Control.Feedback type="invalid">{errors.public}</Form.Control.Feedback>
+              </Form.Group>
+            </Col>
+            <Col md="12">
+              <Form.Group>
+                <Form.Label className='fw-bold'>Traços</Form.Label>
+                {['L(o)', 'M(o)', 'R(o)', 'M(o)', 'J(o)'].map((option) => (
+                  <Form.Check
+                    key={option}
+                    label={option}
+                    value={option}
+                    checked={values.public.includes(option)}
+                    onChange={() => handleCheckboxChange('traits', option)}
+                    isInvalid={!!errors.public && touched.public}
+                  />
+                ))}
+                <Form.Control.Feedback type="invalid">{errors.traits}</Form.Control.Feedback>
               </Form.Group>
             </Col>
           </Row>
