@@ -1,4 +1,4 @@
-import { Badge, Button, Card, Col, Nav, Row } from 'react-bootstrap';
+import { Alert, Badge, Button, Card, Col, Nav, Row } from 'react-bootstrap';
 import CsLineIcons from '/src/cs-line-icons/CsLineIcons';
 import AdvertisementForm from './AdvertisementForm';
 
@@ -24,7 +24,7 @@ const Dashboard = () => {
                       <div className="d-flex flex-column">
                         <div className="fw-bold">Título do anúncio</div>
                         <div> <Badge>Anúncio mensal</Badge></div>
-                       
+
                       </div>
                       <div className="d-flex">
                         <Button variant="outline-secondary" size="sm" className="ms-1">
@@ -50,6 +50,26 @@ const Dashboard = () => {
             </Card.Body>
           </Card>
         </Col>
+
+        <Col md={8} className="mt-4">
+          <h5 className="fw-bold">Confirmação de identidade</h5>
+          <Card>
+            <Card.Body>
+              <Alert className='text-center'>
+                Para confirmar sua identidade, solicitamos que envie uma foto do seu documento e uma selfie segurando o mesmo. O processo de análise do seu cadastro pode levar até 1 dia útil.
+              </Alert>
+            </Card.Body>
+          </Card>
+
+          <Card>
+            <Card.Body>
+              <Alert className='text-center'>
+                Aguarde, estamos validando o seu cadastro.
+              </Alert>
+            </Card.Body>
+          </Card>
+        </Col>
+
         <Col md={8} className="mt-4">
           <AdvertisementForm />
         </Col>
