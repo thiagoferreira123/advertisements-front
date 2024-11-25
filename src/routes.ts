@@ -4,31 +4,8 @@ import { RouteItemProps } from './routing/protocols/RouteIdentifier';
 
 const dashboard = lazy(() => import('./pages/Dashboard'));
 
-const Login = {
-  index: lazy(() => import('./pages/Auth/Login')),
-  ForgotPassword: lazy(() => import('./pages/Auth/ForgotPassword/index')),
-  Register: lazy(() => import('./pages/Auth/Register/index')),
-  ResetPassword: lazy(() => import('./pages/Auth/ResetPassword/index')),
-};
-
-const ferramentas = {
-  index: lazy(() => import('./views/apps/Apps')),
-};
-
-const pages = {
-  index: lazy(() => import('./views/pages/Pages')),
-  authentication: {
-    login: lazy(() => import('./pages/authentication/Login')),
-    register: lazy(() => import('./pages/authentication/Register')),
-    forgotPassword: lazy(() => import('./pages/authentication/ForgotPassword')),
-    resetPassword: lazy(() => import('./pages/authentication/ResetPassword')),
-  },
-
-};
-
-const patientMenu = {
-  Register: lazy(() => import('./pages/Auth/Register/index')),
-  ResetPassword: lazy(() => import('./pages/Auth/ResetPassword/index')),
+const advertisement = {
+  create: lazy(() => import('./pages/advertisement/CreateAdvertisement')),
 };
 
 export const appRoot = DEFAULT_PATHS.APP.endsWith('/') ? DEFAULT_PATHS.APP.slice(0, DEFAULT_PATHS.APP.length - 1) : DEFAULT_PATHS.APP;
@@ -46,6 +23,13 @@ const routesAndMenuItems: RoutesAndMenuItems = {
       icon: 'home',
       component: dashboard,
       roles: [],
+    },
+    {
+      path: `${appRoot}/advertisement/create`,
+      label: 'createAdvertisement',
+      component: advertisement.create,
+      roles: [],
+      hideInMenu: true,
     },
   ],
 

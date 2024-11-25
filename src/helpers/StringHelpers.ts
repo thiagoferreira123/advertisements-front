@@ -33,12 +33,79 @@ export function convertPlainTextToHTML(text: string) {
   return `<p>${text.replace(/\n/g, '<br>')}</p>`;
 }
 
+export const escapeRegexCharacters = (str: string) => {
+  // Substitui letras acentuadas pela sua versão sem acento
+  str = str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  // Remove caracteres que não sejam letras, números ou espaços e substitui por espaço
+  str = str.replace(/[^a-zA-Z0-9 çÇ]/g, '');
+
+  // Substitui múltiplos espaços por um único espaço
+  str = str.replace(/\s+/g, ' ');
+
+  return str.trim().toLowerCase();
+}
+
+export const extractNumber = (texto: string) => {
+  const regex = /^(\d+)/;
+  const match = texto.match(regex);
+  return match ? match[0] : null;
+}
+
+export const validateCPF = (value: string) => {
+  // Se não for string, o CPF é inválido
+  if (typeof value !== 'string') {
+      return false;
+  }
+
+  // Remove todos os caracteres que não sejam números
+  value = value.replace(/[^\d]+/g, '');
+
+  // Se o CPF não tem 11 dígitos ou todos os dígitos são repetidos, o CPF é inválido
+  if (value.length !== 11 || !!value.match(/(\d)\1{10}/)) {
+      return false;
+  }
+
+  // Transforma de string para number[] com cada dígito sendo um número no array
+  const digits = value.split('').map(el => +el);
+
+  // Função que calcula o dígito verificador de acordo com a fórmula da Receita Federal
+  function getVerifyingDigit(arr: number[]) {
+      const reduced = arr.reduce( (sum, digit, index)=>(sum + digit * (arr.length - index + 1)), 0 );
+      return (reduced * 10) % 11 % 10;
+  }
+
+  // O CPF é válido se, e somente se, os dígitos verificadores estão corretos
+  return getVerifyingDigit(digits.slice(0, 9)) === digits[9]
+      && getVerifyingDigit(digits.slice(0, 10)) === digits[10];
+}
+
+export function parseNumberToWhatsapp(phoneNumber: string): string {
+  phoneNumber = phoneNumber.replace(/\s/g, '').replace(/[^\w\s]/gi, '');
+
+  // Remove o zero inicial se houver
+  if (phoneNumber.startsWith('0')) {
+    phoneNumber = phoneNumber.substring(1);
+  }
+
+  // Extrai o DDD (os dois primeiros dígitos)
+  const ddd = parseInt(phoneNumber.slice(0, 2));
+  let numero = phoneNumber.slice(2);
+
+  // Verifica se o DDD é maior que 30 e se o número começa com 9
+  if (ddd > 30 && numero.startsWith('9')) {
+    // Remove o primeiro '9' do número
+    numero = numero.substring(1);
+  }
+
+  // Retorna o telefone ajustado
+  return `${ddd}${numero}`;
+}
+
 export function parseBrValueToNumber(value: string) {
   return Number(value.replace('.', '').replace(',', '.'));
 }
 
-export function parseToBrValue(value: string | number) {
-  return typeof value === 'string' ?
-    Number(parseBrValueToNumber(value)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) :
-    value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-}
+export const truncateString = (message: string, maxLength: number = 128) => {
+  return message.length > maxLength ? `${message.slice(0, maxLength)}...` : message;
+};

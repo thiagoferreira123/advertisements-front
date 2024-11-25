@@ -70,6 +70,8 @@ module.exports = {
     'react/no-array-index-key': 0,
     'react/no-unescaped-entities': 0,
     'react/jsx-props-no-spreading': 0,
+    "react/jsx-uses-react": 0,
+    "react/react-in-jsx-scope": 0,
     'import/extensions': ['error', {
       'js': 'never',
       'jsx': 'never',
@@ -77,14 +79,15 @@ module.exports = {
       'tsx': 'never'
     }],
     'import/prefer-default-export': 'off',
-    // 'import/no-extraneous-dependencies': ['error', {'devDependencies': true}],
     'react-hooks/rules-of-hooks': 'warn',
     'react-hooks/exhaustive-deps': 'warn',
     'jsx-a11y/anchor-is-valid': 'warn',
     'no-console': 'off',
     'no-param-reassign': 0,
     'import/no-unresolved': 0,
-    'no-unused-vars': 'warn',
+    'no-unused-vars': 0,
+    "@typescript-eslint/no-unused-vars": 0,
+    '@typescript-eslint/no-explicit-any': 0,
   },
   globals: {
     window: true,

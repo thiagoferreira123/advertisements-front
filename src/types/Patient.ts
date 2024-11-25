@@ -3,7 +3,7 @@ import { isObject } from "../helpers/Utils";
 
 export type Patient = {
   patient_id?: string;
-  patient_clinic_id?: string;
+  patient_id?: string;
   patient_last_interaction: string;
   patient_full_name: string;
   patient_photo?: string;

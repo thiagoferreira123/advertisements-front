@@ -1,5 +1,3 @@
-import { LocalAtendimento } from "../../../../types/FormBuilder";
-
 export interface LoginValues {
   email: string;
   password: string;
@@ -14,9 +12,9 @@ export interface ResetPasswordValues {
 export interface RegisterValues {
   name: string;
   email: string;
+  cpf: string;
   password: string;
   password_confirm: string;
-  phone: string;
   terms: boolean;
 }
 
@@ -27,6 +25,7 @@ export type CreateAuthStore = {
   register: (values: RegisterValues) => Promise<void>;
   forgotPassword: (values: { email: string }) => Promise<void>;
   resetPassword: (values: ResetPasswordValues) => Promise<void>;
+  updateIdentificationImages: (values: UpdateIdentificationImagesDto) => Promise<boolean>;
   logout: () => void;
   checkAuth: () => Promise<boolean>;
   getUser: () => User | null;
@@ -39,30 +38,19 @@ export enum PriceNames {
 }
 
 export interface User {
-  clinic_id: string;
-  clinic_email: string;
-  clinic_full_name: string;
-  clinic_password: string;
-  clinic_phone: string;
-  clinic_reset_password_token?: string;
-  clinic_reset_password_token_expires?: Date;
-  clinic_cnpj_or_cpf?: string;
-  clinic_zipcode?: string;
-  clinic_state?: string;
-  clinic_city?: string;
-  clinic_neighborhood?: string;
-  clinic_street?: string;
-  clinic_number?: number;
-  clinic_logo_link: string;
-  clinic_signature_link: string;
-  clinic_stripe_customer_id: string;
-  subscription: {
-    id: number,
-    stripe_subscription_id: string,
-    clinic_id: number,
-    subscription_level: PriceNames;
-    subscription_status: 'active' | 'canceled' | 'trialing' | 'past_due' | 'unpaid',
-  }
+  advertiser_id: string;
+  name: string;
+  email: string;
+  cpf: string;
+  birth: string;
+  password: string;
+  document_photo?: string;
+  document_selfie?: string;
+  subscription_id?: string;
+  reset_password_token?: string;
+  reset_password_token_expires?: string;
+  stripe_customer_id?: string;
+  checked?: boolean;
 }
 
 export enum Role {
@@ -70,9 +58,7 @@ export enum Role {
   SECRETARY = 'secretaria',
 }
 
-interface SubscriptionStatus {
-  id: number,
-  status: string,
-  data: string,
-  cancellationDate: string
+type UpdateIdentificationImagesDto = {
+  document_photo: string;
+  document_selfie: string;
 }

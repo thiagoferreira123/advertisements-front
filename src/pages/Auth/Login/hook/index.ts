@@ -19,7 +19,7 @@ export const useAuth = create<CreateAuthStore>((set) => ({
   },
 
   register: async (payload) => {
-    const response = await api.post('/advertiser', { ...payload, clinic_phone: payload.clinic_phone.replace(/\s/g, '').replace(/[^\w\s]/gi, ''), });
+    const response = await api.post('/advertiser', payload);
 
     localStorage.setItem('user', JSON.stringify(response.data));
 
@@ -45,6 +45,18 @@ export const useAuth = create<CreateAuthStore>((set) => ({
     }
 
     await api.post('/advertiser/reset-password', payload);
+  },
+
+  updateIdentificationImages: async (payload) => {
+    await api.put('/advertiser/identification-images', payload);
+
+    set((state) => {
+      if (!state.user) return state;
+
+      return { user: { ...state.user, document_photo: payload.document_photo, document_selfie: payload.document_selfie } };
+    });
+
+    return true;
   },
 
   checkAuth: async () => {

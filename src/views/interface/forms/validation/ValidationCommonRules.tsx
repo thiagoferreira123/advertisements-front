@@ -36,7 +36,7 @@ const ValidationCommonRules = () => {
     details: Yup.string().max(20, 'Must be 20 chars or less!').required('Details required'),
     password: Yup.string().min(6, 'Must be at least 6 chars!').required('Password is required'),
     passwordConfirm: Yup.string()
-      .oneOf([Yup.ref('clinic_password'), undefined], 'As senhas devem coincidir.')
+      .oneOf([Yup.ref('password'), undefined], 'As senhas devem coincidir.')
       .required('Confirme a senha.'),
     creditCard: Yup.string()
       .matches(digitRegex, 'Must be a valid credit card number without whitespace!')

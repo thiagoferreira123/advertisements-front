@@ -8,7 +8,6 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      // Configura um alias "@" para "src/"
       '@': resolve(__dirname, './src'),
     },
   },
@@ -17,5 +16,4 @@ export default defineConfig({
       plugins: [fixReactVirtualized],
     },
   },
-
 })

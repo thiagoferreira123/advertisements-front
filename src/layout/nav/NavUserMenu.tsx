@@ -53,7 +53,7 @@ const NavUserMenuContent = (props: NavUserMenuContentProps) => {
   const result = useQuery({
     queryKey: ['portal-link'],
     queryFn: getBillingPortal,
-    enabled: !!user?.clinic_stripe_customer_id,
+    enabled: !!user?.stripe_customer_id,
   });
 
   return (
@@ -122,8 +122,8 @@ const NavUserMenuDropdownToggle = React.memo(
         onClick(e);
       }}
     >
-      <img className="profile" alt={user.clinic_full_name} src={user?.clinic_logo_link ? user?.clinic_logo_link : '/img/profile/profile-11.webp'} />
-      <div className="name">{user.clinic_full_name}</div>
+      <img className="profile" alt={user.full_name} src={user?.logo_link ? user?.logo_link : '/img/profile/profile-11.webp'} />
+      <div className="name">{user.full_name}</div>
     </a>
   ))
 );

@@ -12,12 +12,13 @@ interface MultipleDropzoneComponentProps {
   maxFiles?: number;
   accept?: string;
   maxSizeBytes?: number;
+  className?: string;
   onChange: (_value: IFileWithMeta[]) => void; // Alterado para retornar IFileWithMeta[]
   onRemove?: (response: string) => void;
 }
 
 const MultipleDropzoneComponent = (
-  ({ endpoint, placeholder, maxFiles = 20, accept = 'image/*', maxSizeBytes = 16 * 1024 * 1024, onChange, onRemove }: MultipleDropzoneComponentProps) => {
+  ({ endpoint, placeholder, maxFiles = 20, accept = 'image/*', maxSizeBytes = 16 * 1024 * 1024, className, onChange, onRemove }: MultipleDropzoneComponentProps) => {
     const dropzoneRef = useRef<Dropzone>(null);
     const filesRef = useRef<IFileWithMeta[]>([]);
 

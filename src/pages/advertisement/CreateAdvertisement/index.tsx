@@ -1,33 +1,24 @@
 import React, { useState } from 'react';
 import { Button, Col, Form, Row, Card } from 'react-bootstrap';
-import { useFormik } from 'formik';
+import { getIn, useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useQueryClient } from '@tanstack/react-query';
 import { IFileWithMeta } from 'react-dropzone-uploader';
-import { notEmpty } from '../../helpers/Utils';
-import CsLineIcons from '../../cs-line-icons/CsLineIcons';
-import MultipleDropzoneComponent from '../../components/MultipleDropzoneComponent';
-import AsyncButton from '../../components/AsyncButton';
 
-interface FormValues {
-  advertiser_id: string;
-  name: string;
-  state: string;
-  city: string;
-  title: string;
-  description: string;
-  availability: string;
-  price: number;
-  age: number;
-  locations: string[];
-  categories: string[];
-  public: string[];
-  traits: string[];
-  photos: Record<string, string>;
-  videos: Record<string, string>;
-}
+import { notEmpty } from '@/helpers/Utils';
+import CsLineIcons from '@/cs-line-icons/CsLineIcons';
+import MultipleDropzoneComponent from '@/components/MultipleDropzoneComponent';
+import AsyncButton from '@/components/AsyncButton';
+import { useAdvertisement } from './hook';
+import { notify } from '@/components/toast/NotificationIcon';
+import { AxiosError } from 'axios';
+import { AdvertisementFormValues, AdvertisementPhotosFormValues, AdvertisementVideosFormValues } from './hook/types';
+import BasicSelect from '@/components/BasicSelect';
+import { cities, states } from './constants';
+import { formatCurrency } from '@/helpers/GenericScripts';
+import { parseBrValueToNumber } from '@/helpers/StringHelpers';
 
-const AdvertisementForm: React.FC = () => {
+const CreateAdvertisement: React.FC = () => {
   const queryClient = useQueryClient();
 
   const [isSaving, setIsSaving] = useState(false);
@@ -36,129 +27,77 @@ const AdvertisementForm: React.FC = () => {
   const [isRemovingPhotoUrls, setIsRemovingPhotoUrls] = useState<string[]>([]);
   const [isRemovingVideoUrls, setIsRemovingVideoUrls] = useState<string[]>([]);
 
-  const initialValues: FormValues = {
-    name: '',
-    advertiser_id: '',
-    state: '',
-    city: '',
-    title: '',
-    description: '',
-    availability: '',
-    price: 0,
-    age: 0,
-    locations: [],
-    categories: [],
-    public: [],
-    traits: [],
-    photos: {
-      photo1: '',
-      photo2: '',
-      photo3: '',
-      photo4: '',
-      photo5: '',
-      photo6: '',
-      photo7: '',
-      photo8: '',
-      photo9: '',
-      photo10: '',
-      photo11: '',
-      photo12: '',
-      photo13: '',
-      photo14: '',
-      photo15: '',
-    },
-    videos: {
-      video1: '',
-      video2: '',
-      video3: '',
-      video4: '',
-      video5: '',
-      video6: '',
-      video7: '',
-      video8: '',
-      video9: '',
-      video10: '',
-      video11: '',
-      video12: '',
-      video13: '',
-      video14: '',
-      video15: '',
-    },
-  };
+  const { createAdvertisement } = useAdvertisement();
 
-  const validationSchema = Yup.object().shape({
-    state: Yup.string().required('Estado é obrigatório'),
-    city: Yup.string().required('Cidade é obrigatória'),
-    title: Yup.string().required('Título é obrigatório'),
-    description: Yup.string().required('Descrição é obrigatória'),
-    availability: Yup.string().required('Disponibilidade é obrigatória'),
-    price: Yup.number(),
-    age: Yup.number().required('Idade é obrigatória').integer('A idade deve ser um número inteiro').positive('A idade deve ser positiva'),
-    locations: Yup.array().required('Localização é obrigatória'),
-    categories: Yup.array().required('Categorias são obrigatórias'),
-    public: Yup.array().required('Público é obrigatório'),
-    traits: Yup.array().required('Traços é obrigatório'),
-    photos: Yup.object().required('Fotos são obrigatórias'),
-  });
+  const onSubmit = async (values: AdvertisementFormValues) => {
+    try {
+      setIsSaving(true);
+      await createAdvertisement(values);
 
-  const onSubmit = (values: FormValues) => {
-    console.log('Form submitted', values);
+      notify('Anúncio criado com sucesso', 'Success', 'check-circle', 'success');
+    } catch (error) {
+      if (error instanceof AxiosError) notify(error.response?.data.message, 'Erro', 'close', 'danger');
+      console.error(error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleChangeMultiplePhotos = (files: IFileWithMeta[]) => {
     setImageFiles(files);
 
-    const filesUrls = files.map((file) => file.xhr?.response).filter((url: string | undefined) => url?.length);
+    const fileUrls = files.map((file) => file.xhr?.response);
 
-    const photoUrls = Object.values(values.photos).filter((url) => url?.length);
+    const photoUrls = values.photos.map((photo) => photo.photo_url);
 
-    const combinedUrls = [...photoUrls, ...filesUrls].filter(notEmpty).reduce((acc: string[], url) => {
-      if (url && !acc.includes(url)) acc.push(url);
+    const combinedUrls = [...photoUrls, ...fileUrls].reduce((acc: AdvertisementPhotosFormValues[], url) => {
+      if (url && !acc.find((photo) => photo.photo_url === url)) acc.push({ photo_url: url });
+
       return acc;
     }, []);
 
-    Object.keys(values.photos).forEach((key, index) => {
-      formik.setFieldValue(`photos.${key}`, combinedUrls[index] ?? '');
-    });
+    console.log('files', files.length, files);
+    console.log('combinedUrls', combinedUrls.length, combinedUrls);
+
+    formik.setFieldValue('photos', combinedUrls);
   };
 
   const handleChangeMultipleVideos = (files: IFileWithMeta[]) => {
     setVideoFiles(files);
 
-    const filesUrls = files.map((file) => file.xhr?.response).filter((url: string | undefined) => url?.length);
+    const filesUrls = files.map((file) => file.xhr?.response);
 
-    const videoUrls = Object.values(values.videos).filter((url) => url?.length);
+    const videoUrls = values.videos.map((video) => video.video_url);
 
-    const combinedUrls = [...videoUrls, ...filesUrls].filter(notEmpty).reduce((acc: string[], url) => {
-      if (url && !acc.includes(url)) acc.push(url);
+    const combinedUrls = [...videoUrls, ...filesUrls].reduce((acc: AdvertisementVideosFormValues[], url) => {
+      if (url && !acc.find((video) => video.video_url === url)) acc.push({ video_url: url });
       return acc;
     }, []);
 
-    Object.keys(values.videos).forEach((key, index) => {
-      formik.setFieldValue(`videos.${key}`, combinedUrls[index] ?? '');
-    });
+    formik.setFieldValue(`videos`, combinedUrls);
   };
 
   const handleClickRemovePhoto = async (response: string) => {
     try {
-      const photoKey = Object.keys(values.photos).find((key) => values.photos[key] == response);
+      const photoIndex = values.photos.findIndex((photo) => photo.photo_url == response);
 
       const file = imageFiles.find((file) => file.xhr?.response == response);
 
+      console.log('removed file', file, photoIndex);
+
       if (file) {
         file.remove();
-      } else if (photoKey) {
+        if (photoIndex <= 1)
+          setFieldValue(
+            'photos',
+            values.photos.filter((photo) => photo.photo_url !== response)
+          );
+      } else if (photoIndex !== -1) {
         setIsRemovingPhotoUrls((prev) => [...prev, response]);
 
-        // if (property?.additional_information?.id) {
-        //   await updatePropertyAdditionalIinformation(
-        //     property.additional_information.id,
-        //     { photos: { ...values.photos, [photoKey]: '' } },
-        //     queryClient
-        //   );
-        // }
+        console.log('photos', values.photos);
 
-        formik.setFieldValue(`photos.${photoKey}`, '');
+        formik.setFieldValue(`photos[${photoIndex}].photo_url`, '');
         setIsRemovingPhotoUrls((prev) => prev.filter((key) => key !== response));
       }
     } catch (error) {
@@ -168,16 +107,16 @@ const AdvertisementForm: React.FC = () => {
 
   const handleClickRemoveVideo = async (response: string) => {
     try {
-      const videoKey = Object.keys(values.videos).find((key) => values.videos[key] == response);
+      const videoIndex = values.videos.findIndex((video) => video.video_url == response);
 
       const file = videoFiles.find((file) => file.xhr?.response == response);
 
       if (file) {
         file.remove();
-      } else if (videoKey) {
+      } else if (videoIndex !== -1) {
         setIsRemovingVideoUrls((prev) => [...prev, response]);
 
-        formik.setFieldValue(`videos.${videoKey}`, '');
+        formik.setFieldValue(`videos[${videoIndex}].video_url`, '');
         setIsRemovingVideoUrls((prev) => prev.filter((key) => key !== response));
       }
     } catch (error) {
@@ -187,9 +126,9 @@ const AdvertisementForm: React.FC = () => {
 
   const onDropzoneRemovePhoto = async (response: string) => {
     try {
-      const photoKey = Object.keys(values.photos).find((key) => values.photos[key] === response);
+      const photoIndex = values.photos.findIndex((photo) => photo.photo_url === response);
 
-      if (photoKey) {
+      if (photoIndex !== -1) {
         setIsRemovingPhotoUrls((prev) => [...prev, response]);
 
         // if (property?.additional_information?.id) {
@@ -200,7 +139,7 @@ const AdvertisementForm: React.FC = () => {
         //   );
         // }
 
-        formik.setFieldValue(`photos.${photoKey}`, '');
+        formik.setFieldValue(`photos[${photoIndex}].photo_url`, '');
         setIsRemovingPhotoUrls((prev) => prev.filter((key) => key !== response));
       }
     } catch (error) {
@@ -210,12 +149,12 @@ const AdvertisementForm: React.FC = () => {
 
   const onDropzoneRemoveVideo = async (response: string) => {
     try {
-      const videoKey = Object.keys(values.videos).find((key) => values.videos[key] === response);
+      const videoIndex = values.videos.findIndex((video) => video.video_url === response);
 
-      if (videoKey) {
+      if (videoIndex !== -1) {
         setIsRemovingVideoUrls((prev) => [...prev, response]);
 
-        formik.setFieldValue(`videos.${videoKey}`, '');
+        formik.setFieldValue(`videos[${videoIndex}].video_url`, '');
         setIsRemovingVideoUrls((prev) => prev.filter((key) => key !== response));
       }
     } catch (error) {
@@ -223,7 +162,20 @@ const AdvertisementForm: React.FC = () => {
     }
   };
 
-  const formik = useFormik<FormValues>({ initialValues, validationSchema, onSubmit });
+  const handleCheckboxChange = (field: string, value: string) => {
+    setFieldValue(
+      field,
+      Array.isArray(values[field as keyof AdvertisementFormValues])
+        ? (values[field as keyof AdvertisementFormValues] as string[]).includes(value)
+          ? (values[field as keyof AdvertisementFormValues] as string[]).filter((v) => v !== value)
+          : [...(values[field as keyof AdvertisementFormValues] as string[]), value]
+        : values[field as keyof AdvertisementFormValues] === value
+        ? ''
+        : value
+    );
+  };
+
+  const formik = useFormik<AdvertisementFormValues>({ initialValues, validationSchema, onSubmit });
 
   const { handleSubmit, handleChange, values, touched, errors, setFieldValue } = formik;
 
@@ -243,32 +195,41 @@ const AdvertisementForm: React.FC = () => {
             <Col md="12">
               <h5 className="fw-bold">Fotos</h5>
               <MultipleDropzoneComponent
-                endpoint="/advertiser/image"
+                endpoint="/advertisements/image"
                 onChange={handleChangeMultiplePhotos}
                 onRemove={onDropzoneRemovePhoto}
-                maxFiles={15 - Object.values(values.photos).filter((image) => image?.length && !imageFiles.find((file) => file.xhr?.response === image)).length}
+                maxFiles={
+                  15 - values.photos.filter((image) => image?.photo_url?.length && !imageFiles.find((file) => file.xhr?.response === image.photo_url)).length
+                }
               />
+              <Form.Control.Feedback type="invalid" className='d-block'>{getIn(errors, 'photos')}</Form.Control.Feedback>
 
               {/* Display uploaded photos */}
               <Row className="mt-3">
-                {Object.entries(values.photos).map(
-                  ([key, value], index) =>
+                {values.photos.map(
+                  (value, index) =>
                     value && (
-                      <Col md="3" key={key} className="mb-3">
+                      <Col md="3" key={index} className="mb-3">
                         <Card className="border">
-                          <Card.Img variant="top" src={value} className="img-fluid sh-20" />
+                          <Card.Img variant="top" src={value.photo_url} className="img-fluid sh-20" />
                           <Card.Body className="d-flex justify-content-between align-items-center p-2">
                             <small>{`${index + 1} de ${Object.values(values.photos).filter(Boolean).length}`}</small>
                             <div>
-                              <a href={value} target="_blank" rel="noopener noreferrer" className="btn btn-outline-primary btn-icon btn-icon-only me-2">
+                              <a
+                                href={value.photo_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-outline-primary btn-icon btn-icon-only me-2"
+                              >
                                 <CsLineIcons icon="eye" />
                               </a>
                               <AsyncButton
                                 loadingText=" "
-                                isSaving={isRemovingPhotoUrls.includes(value)}
+                                isSaving={isRemovingPhotoUrls.includes(value.photo_url)}
                                 variant="outline-primary"
-                                onClickHandler={() => handleClickRemovePhoto(value)}
+                                onClickHandler={() => handleClickRemovePhoto(value.photo_url)}
                                 className="btn-icon btn-icon-only"
+                                type="button"
                               >
                                 <CsLineIcons icon="bin" />
                               </AsyncButton>
@@ -284,34 +245,35 @@ const AdvertisementForm: React.FC = () => {
             <Col md="12">
               <h5 className="fw-bold">Vídeos</h5>
               <MultipleDropzoneComponent
-                endpoint="/advertiser/video"
+                endpoint="/advertisements/video"
                 onChange={handleChangeMultipleVideos}
                 onRemove={onDropzoneRemoveVideo}
                 accept="video/*"
                 maxSizeBytes={200 * 1024 * 1024} // 200 MB
-                maxFiles={3 - Object.values(values.photos).filter((image) => image?.length && !imageFiles.find((file) => file.xhr?.response === image)).length}
+                maxFiles={3 - values.videos.filter((video) => video?.video_url?.length && !videoFiles.find((file) => file.xhr?.response === video.video_url)).length}
               />
+              <Form.Control.Feedback type="invalid" className='d-block'>{getIn(errors, 'videos')}</Form.Control.Feedback>
 
               {/* Display uploaded photos */}
               <Row className="mt-3">
-                {Object.entries(values.videos).map(
-                  ([key, value], index) =>
+                {values.videos.map(
+                  (value, index) =>
                     value && (
-                      <Col md="3" key={key} className="mb-3">
+                      <Col md="3" key={index} className="mb-3">
                         <Card className="border">
                           {/* <Card.Img variant="top" src={value} className="img-fluid sh-20" /> */}
-                          <video src={value} className="img-fluid sh-20" controls />
+                          <video src={value.video_url} className="img-fluid sh-20" controls />
                           <Card.Body className="d-flex justify-content-between align-items-center p-2">
                             <small>{`${index + 1} de ${Object.values(values.videos).filter(Boolean).length}`}</small>
                             <div>
-                              <a href={value} target="_blank" rel="noopener noreferrer" className="btn btn-outline-primary btn-icon btn-icon-only me-2">
+                              <a href={value.video_url} target="_blank" rel="noopener noreferrer" className="btn btn-outline-primary btn-icon btn-icon-only me-2">
                                 <CsLineIcons icon="eye" />
                               </a>
                               <AsyncButton
                                 loadingText=" "
-                                isSaving={isRemovingVideoUrls.includes(value)}
+                                isSaving={isRemovingVideoUrls.includes(value.video_url)}
                                 variant="outline-primary"
-                                onClickHandler={() => handleClickRemoveVideo(value)}
+                                onClickHandler={() => handleClickRemoveVideo(value.video_url )}
                                 className="btn-icon btn-icon-only"
                               >
                                 <CsLineIcons icon="bin" />
@@ -342,14 +304,24 @@ const AdvertisementForm: React.FC = () => {
             <Col md="6">
               <Form.Group className="form-group position-relative tooltip-end-top">
                 <Form.Label className="fw-bold">Estado</Form.Label>
-                <Form.Control type="text" name="state" onChange={handleChange} value={values.state} isInvalid={!!errors.state && touched.state} />
+                <BasicSelect
+                  options={states.map((state) => ({ label: state.name, value: state.id.toString() }))}
+                  value={values.state}
+                  onChange={(option) => setFieldValue('state', option.value)}
+                  className={!!errors.state ? 'is-invalid' : ''}
+                />
                 <Form.Control.Feedback type="invalid">{errors.state}</Form.Control.Feedback>
               </Form.Group>
             </Col>
             <Col md="6">
               <Form.Group className="form-group position-relative tooltip-end-top">
                 <Form.Label className="fw-bold">Cidade</Form.Label>
-                <Form.Control type="text" name="city" onChange={handleChange} value={values.city} isInvalid={!!errors.city && touched.city} />
+                <BasicSelect
+                  options={cities.filter((city) => city.state_id === Number(values.state)).map((city) => ({ label: city.name, value: city.id.toString() }))}
+                  value={values.city}
+                  onChange={(option) => setFieldValue('city', option.value)}
+                  className={!!errors.city ? 'is-invalid' : ''}
+                />
                 <Form.Control.Feedback type="invalid">{errors.city}</Form.Control.Feedback>
               </Form.Group>
             </Col>
@@ -373,7 +345,14 @@ const AdvertisementForm: React.FC = () => {
             <Col md="4">
               <Form.Group className="form-group position-relative tooltip-end-top">
                 <Form.Label className="fw-bold">Valor R$ (A combinar, deixe 0)</Form.Label>
-                <Form.Control type="number" name="price" onChange={handleChange} value={values.price} isInvalid={!!errors.price && touched.price} />
+                <Form.Control
+                  type="string"
+                  name="price"
+                  onChange={(e) => setFieldValue('price', formatCurrency(e.target.value))}
+                  value={values.price}
+                  isInvalid={!!errors.price && touched.price}
+                  className={!!errors.price ? 'is-invalid' : ''}
+                />
                 <Form.Control.Feedback type="invalid">{errors.price}</Form.Control.Feedback>
               </Form.Group>
             </Col>
@@ -398,6 +377,7 @@ const AdvertisementForm: React.FC = () => {
                     checked={values.locations.includes(option)}
                     onChange={() => handleCheckboxChange('locations', option)}
                     isInvalid={!!errors.locations && touched.locations}
+                    className={!!errors.locations ? 'is-invalid' : ''}
                   />
                 ))}
                 <Form.Control.Feedback type="invalid">{errors.locations}</Form.Control.Feedback>
@@ -414,6 +394,7 @@ const AdvertisementForm: React.FC = () => {
                     checked={values.categories.includes(option)}
                     onChange={() => handleCheckboxChange('categories', option)}
                     isInvalid={!!errors.categories && touched.categories}
+                    className={!!errors.categories ? 'is-invalid' : ''}
                   />
                 ))}
                 <Form.Control.Feedback type="invalid">{errors.categories}</Form.Control.Feedback>
@@ -430,6 +411,7 @@ const AdvertisementForm: React.FC = () => {
                     checked={values.public.includes(option)}
                     onChange={() => handleCheckboxChange('public', option)}
                     isInvalid={!!errors.public && touched.public}
+                    className={!!errors.public ? 'is-invalid' : ''}
                   />
                 ))}
                 <Form.Control.Feedback type="invalid">{errors.public}</Form.Control.Feedback>
@@ -438,14 +420,15 @@ const AdvertisementForm: React.FC = () => {
             <Col md="12">
               <Form.Group>
                 <Form.Label className="fw-bold">Traços</Form.Label>
-                {['L(o)', 'M(o)', 'R(o)', 'M(o)', 'J(o)'].map((option) => (
+                {['L(o)', 'M(o)', 'R(o)', 'J(o)'].map((option) => (
                   <Form.Check
                     key={option}
                     label={option}
                     value={option}
-                    checked={values.public.includes(option)}
+                    checked={values.traits.includes(option)}
                     onChange={() => handleCheckboxChange('traits', option)}
-                    isInvalid={!!errors.public && touched.public}
+                    isInvalid={!!errors.traits && touched.traits}
+                    className={!!errors.traits ? 'is-invalid' : ''}
                   />
                 ))}
                 <Form.Control.Feedback type="invalid">{errors.traits}</Form.Control.Feedback>
@@ -454,7 +437,9 @@ const AdvertisementForm: React.FC = () => {
           </Row>
 
           <div className="text-center">
-            <Button type="submit">Salvar anúncio</Button>
+            <AsyncButton type="submit" isSaving={isSaving}>
+              Salvar anúncio
+            </AsyncButton>
           </div>
         </Form>
       </Card.Body>
@@ -462,4 +447,42 @@ const AdvertisementForm: React.FC = () => {
   );
 };
 
-export default AdvertisementForm;
+const initialValues: AdvertisementFormValues = {
+  name: '',
+  advertiser_id: '',
+  state: '',
+  city: '',
+  title: '',
+  description: '',
+  availability: '',
+  price: 0,
+  age: 0,
+  locations: [],
+  categories: [],
+  public: [],
+  traits: [],
+  photos: [],
+  videos: [],
+};
+
+const validationSchema = Yup.object().shape({
+  state: Yup.string().required('Estado é obrigatório'),
+  city: Yup.string().required('Cidade é obrigatória'),
+  title: Yup.string().required('Título é obrigatório'),
+  description: Yup.string().required('Descrição é obrigatória'),
+  availability: Yup.string().required('Disponibilidade é obrigatória'),
+  price: Yup.string()
+    .test('is-positive', 'O valor deve ser maior que zero!', function (value) {
+      const numValue = parseBrValueToNumber(value || '');
+      return numValue > 0;
+    })
+    .required('O valor é obrigatório'),
+  age: Yup.number().required('Idade é obrigatória').integer('A idade deve ser um número inteiro').positive('A idade deve ser positiva'),
+  locations: Yup.array().min(1, 'Selecione pelo menos uma localização').required('Localização é obrigatória'),
+  categories: Yup.array().min(1, 'Selecione pelo menos uma categoria').required('Categorias são obrigatórias'),
+  public: Yup.array().min(1, 'Selecione pelo menos um público').required('Público é obrigatório'),
+  traits: Yup.array().min(1, 'Selecione pelo menos um traço').required('Traços é obrigatório'),
+  photos: Yup.array().min(1, 'Fotos são obrigatórias'),
+});
+
+export default CreateAdvertisement;

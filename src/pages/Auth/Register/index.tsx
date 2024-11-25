@@ -12,6 +12,8 @@ import { notify } from '../../../components/toast/NotificationIcon';
 import CsLineIcons from '../../../cs-line-icons/CsLineIcons';
 import HtmlHead from '../../../components/html-head/HtmlHead';
 import LayoutFullpage from '../../../layout/LayoutFullpage';
+import { applyCpfCnpjMask } from '../../../helpers/GenericScripts';
+import { validateCPF } from '../../../helpers/StringHelpers';
 
 const Register = () => {
   const title = 'Register';
@@ -22,27 +24,27 @@ const Register = () => {
   const history = useNavigate();
 
   const validationSchema = Yup.object().shape({
-    clinic_full_name: Yup.string().required('Digite um nome valido.'),
-    clinic_email: Yup.string().email().required('Digite um email valido.'),
-    clinic_phone: Yup.string().required('Digite um WhatsApp válido.'),
-    clinic_terms: Yup.bool().required().oneOf([true], 'Os termos devem ser aceitos!'),
-    clinic_password: Yup.string()
+    name: Yup.string().required('Digite um nome valido.'),
+    email: Yup.string().email().required('Digite um email valido.'),
+    cpf: Yup.string().test('valid-cpf', 'CPF inválido', (value) => validateCPF(value || '')),
+    terms: Yup.bool().required().oneOf([true], 'Os termos devem ser aceitos!'),
+    password: Yup.string()
       .min(6, 'Deve ter pelo menos 6 caracteres')
       .matches(/[a-z]/, 'Deve conter pelo menos uma letra')
       .matches(/[^a-zA-Z0-9]/, 'Deve conter pelo menos um símbolo.')
       .required('Digite uma senha válida.'),
-    clinic_password_confirm: Yup.string()
-      .oneOf([Yup.ref('clinic_password'), undefined], 'As senhas devem coincidir.')
+    password_confirm: Yup.string()
+      .oneOf([Yup.ref('password'), undefined], 'As senhas devem coincidir.')
       .required('Confirme a senha.'),
   });
 
   const initialValues: RegisterValues = {
-    clinic_full_name: '',
-    clinic_email: '',
-    clinic_password: '',
-    clinic_password_confirm: '',
-    clinic_phone: '',
-    clinic_terms: false,
+    name: '',
+    email: '',
+    cpf: '',
+    password: '',
+    password_confirm: '',
+    terms: false,
   };
 
   const { register } = useAuth();
@@ -61,6 +63,10 @@ const Register = () => {
       if (error instanceof AxiosError) notify(error.response?.data.message, 'Erro', 'close', 'danger');
       console.error(error);
     }
+  };
+
+  const handleChangeCpf = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFieldValue('cpf', applyCpfCnpjMask(e.target.value));
   };
 
   const formik = useFormik({ initialValues, validationSchema, onSubmit });
@@ -94,29 +100,29 @@ const Register = () => {
           <form id="registerForm" className="tooltip-end-bottom" onSubmit={handleSubmit}>
             <div className="mb-3 filled form-group tooltip-end-top">
               <CsLineIcons icon="user" />
-              <Form.Control type="text" name="clinic_full_name" placeholder="Nome completo" value={values.clinic_full_name} onChange={handleChange} />
-              {errors.clinic_full_name && touched.clinic_full_name && <div className="d-block invalid-tooltip">{errors.clinic_full_name}</div>}
+              <Form.Control type="text" name="name" placeholder="Nome completo" value={values.name} onChange={handleChange} />
+              {errors.name && touched.name && <div className="d-block invalid-tooltip">{errors.name}</div>}
             </div>
 
             <div className="mb-3 filled form-group tooltip-end-top">
               <CsLineIcons icon="email" />
-              <Form.Control type="text" name="clinic_email" placeholder="Email profissional" value={values.clinic_email} onChange={handleChange} />
-              {errors.clinic_email && touched.clinic_email && <div className="d-block invalid-tooltip">{errors.clinic_email}</div>}
+              <Form.Control type="text" name="email" placeholder="Email profissional" value={values.email} onChange={handleChange} />
+              {errors.email && touched.email && <div className="d-block invalid-tooltip">{errors.email}</div>}
             </div>
 
             <div>
               <div className="mb-3 filled form-group tooltip-end-top">
-                <CsLineIcons icon="phone" />
+                <CsLineIcons icon="file-text" />
                 <InputMask
-                  mask="55 99 99999-9999"
-                  value={values.clinic_phone}
-                  onChange={handleChange}
+                  mask="999.999.999-99"
+                  value={values.cpf}
+                  onChange={handleChangeCpf}
                   className="form-control"
-                  name="clinic_phone"
-                  placeholder="WhatsApp"
+                  name="cpf"
+                  placeholder="CPF"
                 >
                 </InputMask>
-                {errors.clinic_phone && touched.clinic_phone && <div className="d-block invalid-tooltip">{errors.clinic_phone}</div>}
+                {errors.cpf && touched.cpf && <div className="d-block invalid-tooltip">{errors.cpf}</div>}
               </div>
             </div>
 
@@ -124,9 +130,9 @@ const Register = () => {
               <CsLineIcons icon="lock-on" />
               <Form.Control
                 type={passwordType}
-                name="clinic_password"
+                name="password"
                 onChange={handleChange}
-                value={values.clinic_password}
+                value={values.password}
                 placeholder="Senha (6 dígitos, símbolo e letra)"
               />
               <div
@@ -136,16 +142,16 @@ const Register = () => {
               >
                 <CsLineIcons icon={eyeIcon} />
               </div>
-              {errors.clinic_password && touched.clinic_password && <div className="d-block invalid-tooltip">{errors.clinic_password}</div>}
+              {errors.password && touched.password && <div className="d-block invalid-tooltip">{errors.password}</div>}
             </div>
 
             <div className="mb-3 filled form-group tooltip-end-top position-relative">
               <CsLineIcons icon="lock-on" />
               <Form.Control
                 type={passwordType}
-                name="clinic_password_confirm"
+                name="password_confirm"
                 onChange={handleChange}
-                value={values.clinic_password_confirm}
+                value={values.password_confirm}
                 placeholder="Confirme sua senha"
               />
               <div
@@ -155,8 +161,8 @@ const Register = () => {
               >
                 <CsLineIcons icon={eyeIcon} />
               </div>
-              {errors.clinic_password_confirm && touched.clinic_password_confirm && (
-                <div className="d-block invalid-tooltip">{errors.clinic_password_confirm}</div>
+              {errors.password_confirm && touched.password_confirm && (
+                <div className="d-block invalid-tooltip">{errors.password_confirm}</div>
               )}
             </div>
 
@@ -165,10 +171,10 @@ const Register = () => {
                 <input
                   type="checkbox"
                   className="form-check-input"
-                  name="clinic_terms"
+                  name="terms"
                   onChange={handleChange}
-                  value={values.clinic_terms ? 1 : 0}
-                  checked={values.clinic_terms}
+                  value={values.terms ? 1 : 0}
+                  checked={values.terms}
                 />
                 <label className="form-check-label">
                   Eu li e aceito os{' '}
@@ -186,7 +192,7 @@ const Register = () => {
                   </NavLink>
                 </label>
 
-                {errors.clinic_terms && touched.clinic_terms && <div className="d-block invalid-tooltip">{errors.clinic_terms}</div>}
+                {errors.terms && touched.terms && <div className="d-block invalid-tooltip">{errors.terms}</div>}
               </div>
             </div>
 
