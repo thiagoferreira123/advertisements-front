@@ -1,0 +1,332 @@
+[
+  {
+    "id": 56,
+    "group": "Trato digestivo",
+    "problem": "Arrotos e/ou gases intestinais"
+  },
+  {
+    "id": 57,
+    "group": "Trato digestivo",
+    "problem": "Constipação / prisão de ventre"
+  },
+  {
+    "id": 58,
+    "group": "Trato digestivo",
+    "problem": "Dor estomacal / intestinal"
+  },
+  {
+    "id": 59,
+    "group": "Trato digestivo",
+    "problem": "Sente-se inchado / com abdômen distendido"
+  },
+  {
+    "id": 60,
+    "group": "Trato digestivo",
+    "problem": "Azia"
+  },
+  {
+    "id": 61,
+    "group": "Trato digestivo",
+    "problem": "Diarreia"
+  },
+  {
+    "id": 62,
+    "group": "Trato digestivo",
+    "problem": "Náuseas, vômito"
+  },
+  {
+    "id": 6,
+    "group": "Saúde bucal e garganta",
+    "problem": "Aftas"
+  },
+  {
+    "id": 7,
+    "group": "Saúde bucal e garganta",
+    "problem": "Dor de garganta, ronquidão ou perda de voz"
+  },
+  {
+    "id": 8,
+    "group": "Saúde bucal e garganta",
+    "problem": "Língua, gengivas ou lábios inchados/descoloridos"
+  },
+  {
+    "id": 9,
+    "group": "Saúde bucal e garganta",
+    "problem": "Tosse crônica"
+  },
+  {
+    "id": 10,
+    "group": "Saúde bucal e garganta",
+    "problem": "Frequente necessidade de limpar a garganta"
+  },
+  {
+    "id": 52,
+    "group": "Pulmões",
+    "problem": "Asma, bronquite"
+  },
+  {
+    "id": 53,
+    "group": "Pulmões",
+    "problem": "Dificuldade para respirar"
+  },
+  {
+    "id": 54,
+    "group": "Pulmões",
+    "problem": "Congestão no peito"
+  },
+  {
+    "id": 55,
+    "group": "Pulmões",
+    "problem": "Pouco fôlego"
+  },
+  {
+    "id": 47,
+    "group": "Pele",
+    "problem": "Acne"
+  },
+  {
+    "id": 48,
+    "group": "Pele",
+    "problem": "Perda de cabelo"
+  },
+  {
+    "id": 49,
+    "group": "Pele",
+    "problem": "Vermelhidão, calorões"
+  },
+  {
+    "id": 50,
+    "group": "Pele",
+    "problem": "Feridas que coçam, erupções, pele seca"
+  },
+  {
+    "id": 51,
+    "group": "Pele",
+    "problem": "Suor excessivo"
+  },
+  {
+    "id": 43,
+    "group": "Ouvidos",
+    "problem": "Coceira"
+  },
+  {
+    "id": 44,
+    "group": "Ouvidos",
+    "problem": "Retirada de fluido purulento de ouvido"
+  },
+  {
+    "id": 45,
+    "group": "Ouvidos",
+    "problem": "Dores de ouvido, infecções auditivas"
+  },
+  {
+    "id": 46,
+    "group": "Ouvidos",
+    "problem": "Zunido, perda de audição"
+  },
+  {
+    "id": 63,
+    "group": "Outros",
+    "problem": "Coceira genital ou corrimento"
+  },
+  {
+    "id": 64,
+    "group": "Outros",
+    "problem": "Frequentemente doente"
+  },
+  {
+    "id": 65,
+    "group": "Outros",
+    "problem": "Edema / Inchaço - Pés / Pernas / Mãos"
+  },
+  {
+    "id": 66,
+    "group": "Outros",
+    "problem": "Frequentemente ou urgente vontade de urinar"
+  },
+  {
+    "id": 39,
+    "group": "Olhos",
+    "problem": "Bolsas ou olheiras abaixo dos olhos"
+  },
+  {
+    "id": 40,
+    "group": "Olhos",
+    "problem": "Visão borrada ou em túnel (não incluiu miopia ou astigmatismo)"
+  },
+  {
+    "id": 41,
+    "group": "Olhos",
+    "problem": "Inchados, vermelhos ou com cílios colando"
+  },
+  {
+    "id": 42,
+    "group": "Olhos",
+    "problem": "Lacrimejantes ou coçando"
+  },
+  {
+    "id": 34,
+    "group": "Nariz",
+    "problem": "Ataques de espirros"
+  },
+  {
+    "id": 35,
+    "group": "Nariz",
+    "problem": "Excessiva formação de muco"
+  },
+  {
+    "id": 36,
+    "group": "Nariz",
+    "problem": "Corrimento nasal, espirros, lacrimejamento e coceira dos olhos (todos juntos)"
+  },
+  {
+    "id": 37,
+    "group": "Nariz",
+    "problem": "Entupido"
+  },
+  {
+    "id": 38,
+    "group": "Nariz",
+    "problem": "Problemas de seios nasais (Sinusite)"
+  },
+  {
+    "id": 1,
+    "group": "Músculos e articulações",
+    "problem": "Artrites ou artrose"
+  },
+  {
+    "id": 2,
+    "group": "Músculos e articulações",
+    "problem": "Dores articulares"
+  },
+  {
+    "id": 3,
+    "group": "Músculos e articulações",
+    "problem": "Sensação de fraqueza ou cansaço"
+  },
+  {
+    "id": 4,
+    "group": "Músculos e articulações",
+    "problem": "Dores musculares"
+  },
+  {
+    "id": 5,
+    "group": "Músculos e articulações",
+    "problem": "Rigidez ou limitação dos movimentos"
+  },
+  {
+    "id": 26,
+    "group": "Mente",
+    "problem": "Concentração ruim"
+  },
+  {
+    "id": 27,
+    "group": "Mente",
+    "problem": "Confusão mental, compreensão ruim"
+  },
+  {
+    "id": 28,
+    "group": "Mente",
+    "problem": "Memória ruim"
+  },
+  {
+    "id": 29,
+    "group": "Mente",
+    "problem": "Fala com repetição de sons ou palavras, com várias pausas involuntárias"
+  },
+  {
+    "id": 30,
+    "group": "Mente",
+    "problem": "Dificuldade de tomar decisões"
+  },
+  {
+    "id": 31,
+    "group": "Mente",
+    "problem": "Fraca coordenação motora"
+  },
+  {
+    "id": 32,
+    "group": "Mente",
+    "problem": "Problemas de aprendizagem"
+  },
+  {
+    "id": 33,
+    "group": "Mente",
+    "problem": "Pronuncia palavras de forma indistinta, confusa"
+  },
+  {
+    "id": 22,
+    "group": "Energia",
+    "problem": "Apatia, letargia"
+  },
+  {
+    "id": 23,
+    "group": "Energia",
+    "problem": "Dificuldade em descansar, relaxar"
+  },
+  {
+    "id": 24,
+    "group": "Energia",
+    "problem": "Fadiga, moleza"
+  },
+  {
+    "id": 25,
+    "group": "Energia",
+    "problem": "Hiperatividade"
+  },
+  {
+    "id": 18,
+    "group": "Emoções",
+    "problem": "Mudanças de humor / mau humor matinal"
+  },
+  {
+    "id": 19,
+    "group": "Emoções",
+    "problem": "Raiva, irritabilidade, agressividade"
+  },
+  {
+    "id": 20,
+    "group": "Emoções",
+    "problem": "Ansiedade, medo, nervosismo"
+  },
+  {
+    "id": 21,
+    "group": "Emoções",
+    "problem": "Depressão"
+  },
+  {
+    "id": 15,
+    "group": "Coração",
+    "problem": "Batidas irregulares ou falhando"
+  },
+  {
+    "id": 16,
+    "group": "Coração",
+    "problem": "Dor no peito"
+  },
+  {
+    "id": 17,
+    "group": "Coração",
+    "problem": "Batidas rápidas demais"
+  },
+  {
+    "id": 11,
+    "group": "Cabeça",
+    "problem": "Sensação de desmaio"
+  },
+  {
+    "id": 12,
+    "group": "Cabeça",
+    "problem": "Insônia"
+  },
+  {
+    "id": 13,
+    "group": "Cabeça",
+    "problem": "Dor de cabeça"
+  },
+  {
+    "id": 14,
+    "group": "Cabeça",
+    "problem": "Tonturas"
+  }
+]

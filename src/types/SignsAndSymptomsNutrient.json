@@ -1,0 +1,174 @@
+[
+  {
+    "id": 17,
+    "nutrient": "Ácido Linoleico"
+  },
+  {
+    "id": 32,
+    "nutrient": "AG essenciais"
+  },
+  {
+    "id": 36,
+    "nutrient": "Alumínio"
+  },
+  {
+    "id": 21,
+    "nutrient": "Cádmio"
+  },
+  {
+    "id": 8,
+    "nutrient": "Cálcio"
+  },
+  {
+    "id": 38,
+    "nutrient": "Carotenoides"
+  },
+  {
+    "id": 49,
+    "nutrient": "Chumbo"
+  },
+  {
+    "id": 48,
+    "nutrient": "Cobalto"
+  },
+  {
+    "id": 9,
+    "nutrient": "Cobre"
+  },
+  {
+    "id": 54,
+    "nutrient": "Colina"
+  },
+  {
+    "id": 33,
+    "nutrient": "Cromo"
+  },
+  {
+    "id": 58,
+    "nutrient": "Enxofre"
+  },
+  {
+    "id": 25,
+    "nutrient": "Ferro"
+  },
+  {
+    "id": 42,
+    "nutrient": "Flúor"
+  },
+  {
+    "id": 41,
+    "nutrient": "Folato"
+  },
+  {
+    "id": 27,
+    "nutrient": "Fósforo"
+  },
+  {
+    "id": 53,
+    "nutrient": "Inositol"
+  },
+  {
+    "id": 18,
+    "nutrient": "Iodo"
+  },
+  {
+    "id": 45,
+    "nutrient": "Magnésio"
+  },
+  {
+    "id": 12,
+    "nutrient": "Manganês"
+  },
+  {
+    "id": 24,
+    "nutrient": "Molibdênio"
+  },
+  {
+    "id": 57,
+    "nutrient": "Ômega-3"
+  },
+  {
+    "id": 13,
+    "nutrient": "Ômega-6"
+  },
+  {
+    "id": 11,
+    "nutrient": "PABA"
+  },
+  {
+    "id": 44,
+    "nutrient": "Potássio"
+  },
+  {
+    "id": 15,
+    "nutrient": "Proteína"
+  },
+  {
+    "id": 16,
+    "nutrient": "Selênio"
+  },
+  {
+    "id": 47,
+    "nutrient": "Sódio"
+  },
+  {
+    "id": 56,
+    "nutrient": "Vanádio"
+  },
+  {
+    "id": 19,
+    "nutrient": "Vitamina A"
+  },
+  {
+    "id": 26,
+    "nutrient": "Vitamina B1"
+  },
+  {
+    "id": 5,
+    "nutrient": "Vitamina B12"
+  },
+  {
+    "id": 22,
+    "nutrient": "Vitamina B2"
+  },
+  {
+    "id": 30,
+    "nutrient": "Vitamina B3"
+  },
+  {
+    "id": 3,
+    "nutrient": "Vitamina B5"
+  },
+  {
+    "id": 20,
+    "nutrient": "Vitamina B6"
+  },
+  {
+    "id": 1,
+    "nutrient": "Vitamina B7"
+  },
+  {
+    "id": 39,
+    "nutrient": "Vitamina B9"
+  },
+  {
+    "id": 6,
+    "nutrient": "Vitamina C"
+  },
+  {
+    "id": 4,
+    "nutrient": "Vitamina D"
+  },
+  {
+    "id": 28,
+    "nutrient": "Vitamina E"
+  },
+  {
+    "id": 34,
+    "nutrient": "Vitamina K"
+  },
+  {
+    "id": 7,
+    "nutrient": "Zinco"
+  }
+]

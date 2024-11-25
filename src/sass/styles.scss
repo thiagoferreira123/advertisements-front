@@ -1,0 +1,565 @@
+@import 'utils/mixins';
+@import 'utils/sizes';
+@import 'utils/positions';
+@import 'utils/shared';
+
+@import 'themes/shared';
+@import 'themes/dark.blue';
+@import 'themes/dark.green';
+@import 'themes/dark.red';
+@import 'themes/dark.purple';
+@import 'themes/dark.pink';
+@import 'themes/light.blue';
+@import 'themes/light.green';
+@import 'themes/light.red';
+@import 'themes/light.purple';
+@import 'themes/light.pink';
+
+@import 'bootstrap/accordion';
+@import 'bootstrap/alert';
+@import 'bootstrap/background';
+@import 'bootstrap/badge';
+@import 'bootstrap/border';
+@import 'bootstrap/button';
+@import 'bootstrap/card';
+@import 'bootstrap/dropdown';
+@import 'bootstrap/form';
+@import 'bootstrap/grid';
+@import 'bootstrap/inputgroup';
+@import 'bootstrap/modal';
+@import 'bootstrap/nav';
+@import 'bootstrap/offcanvas';
+@import 'bootstrap/progress';
+@import 'bootstrap/popover';
+@import 'bootstrap/spinner';
+@import 'bootstrap/texts';
+@import 'bootstrap/tables';
+@import 'bootstrap/toast';
+@import 'bootstrap/tooltip';
+
+@import 'plugins/autosize';
+@import 'plugins/autosuggest';
+@import 'plugins/calendar';
+@import 'plugins/contextmenu';
+@import 'plugins/datatable';
+@import 'plugins/datepicker';
+@import 'plugins/dropzone';
+@import 'plugins/editor';
+@import 'plugins/lightbox';
+@import 'plugins/list';
+@import 'plugins/player';
+@import 'plugins/glide';
+@import 'plugins/inputspinner';
+@import 'plugins/notification';
+@import 'plugins/progressbar';
+@import 'plugins/rating';
+@import 'plugins/scrollbar';
+@import 'plugins/search';
+@import 'plugins/select';
+@import 'plugins/slider';
+@import 'plugins/steps';
+@import 'plugins/tags';
+@import 'plugins/tour';
+@import 'plugins/validation';
+@import 'plugins/wizard';
+@import 'plugins/formbuilder';
+
+@import 'layout/base';
+@import 'layout/typography';
+@import 'layout/main';
+@import 'layout/nav.primary';
+@import 'layout/nav.side';
+@import 'layout/footer';
+@import 'layout/print';
+@import 'layout/settings';
+
+// @import '../pages/EquivalentEatingPlan/modals/ModalFoodOptions/scss/index.scss';
+
+.pointer {
+  cursor: pointer !important;
+}
+
+.not-allowed {
+  cursor: not-allowed !important;
+}
+
+.all-scroll {
+  cursor: all-scroll;
+}
+
+.bg-light-danger {
+  background-color: #f64e6025 !important;
+}
+
+.qnt-equivalente {
+  width: 2.2rem;
+  text-align: center;
+  font-weight: 800;
+  margin-left: 1px;
+  border-radius: var(--border-radius-md);
+  padding: 0;
+}
+
+.modalequivalent-eating-plan-replacement-lists .qnt-equivalente {
+  width: 2.8rem;
+  height: 2.6rem;
+}
+
+.sh-4-4 {
+  height: 2.2rem;
+}
+
+.equivalent-meal-plan-meal-row .filled .form-control {
+  min-height: 2.2rem !important;
+}
+
+.equivalent-meal-plan-meal-row .filled > svg {
+  top: 0.5rem !important;
+  left: 16px;
+}
+
+.hidden-input {
+  min-height: 0 !important;
+  height: 0;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  margin: 0;
+  opacity: 0;
+}
+
+.avatar {
+  width: 104px;
+  height: 104px;
+}
+
+.react-autosuggest__suggestions-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.react-autosuggest__suggestions-list {
+  max-height: 200px;
+  overflow-y: auto;
+  // scrollbar-width: thin; // BEGIN: Added scrollbar width
+  scrollbar-color: var(--border-color) var(--background-color); // BEGIN: Added scrollbar color
+  border-radius: var(--border-radius-md); // BEGIN: Added border radius
+  background-color: var(--background-color); // BEGIN: Added background color
+
+  ::-webkit-scrollbar,
+  &::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+    background: transparent;
+    border-radius: var(--border-radius-md);
+    cursor: default !important;
+  }
+
+  ::-webkit-scrollbar-thumb,
+  &::-webkit-scrollbar-thumb {
+    border-radius: var(--border-radius-md);
+    background: rgba(var(--muted-rgb), 0.4);
+    cursor: default !important;
+  }
+
+  ::-webkit-scrollbar-button,
+  &::-webkit-scrollbar-button {
+    background: transparent;
+    width: 4px;
+    height: 3px;
+    cursor: default !important;
+  }
+
+  ::-webkit-scrollbar-track-piece,
+  &::-webkit-scrollbar-track-piece {
+    background: rgba(var(--muted-rgb), 0.15);
+    border-radius: var(--border-radius-md);
+    cursor: default !important;
+  }
+}
+
+.overflow-y-auto {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+.overflow-x-auto {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+}
+
+#video-preview video,
+#videos-container video {
+  width: 90%;
+  height: auto;
+  object-fit: cover;
+
+  @media (orientation: landscape) {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+  }
+}
+
+.z-1 {
+  z-index: 1;
+}
+
+#leave-videochat-room,
+#leave-videochat-room:active,
+#leave-videochat-room:hover {
+  color: var(--white) !important;
+}
+
+textarea {
+  resize: vertical;
+}
+
+textarea.custom-scrollbar ::-webkit-scrollbar,
+textarea.custom-scrollbar::-webkit-scrollbar {
+  width: 12px;
+  height: 4px;
+  background: rgba(0, 0, 0, 0);
+  border-radius: var(--border-radius-md);
+  cursor: default !important;
+}
+
+//Habilita modo dark na construção dos formularios
+.form-wrap.form-builder .frmb li.form-field,
+.form-wrap.form-builder .frmb .prev-holder select,
+.form-wrap.form-builder .frmb .prev-holder input[type='text'],
+.form-wrap.form-builder .frmb .prev-holder textarea,
+.form-wrap.form-builder .frmb .prev-holder input[type='number'],
+.form-wrap.form-builder .frmb-control li,
+.form-builder .empty {
+  background-color: inherit !important;
+}
+
+.Toastify__toast-theme--light {
+  background: #ffffff !important;
+  color: var(--primary) !important;
+}
+
+@media (max-width: 768px) {
+  .sh-80 {
+    height: 100vh !important;
+  }
+
+  .evidencia-1 {
+    background-color: #115826 !important;
+  }
+
+  .evidencia-2 {
+    background-color: #54aa6d !important;
+  }
+
+  .evidencia-3 {
+    background-color: #59c479 !important;
+  }
+
+  .evidencia-3 {
+    background-color: #91d8a6 !important;
+  }
+
+  .badgeSingsAndSymptoms {
+    padding: 0.3em 0.75em;
+    font-size: 0.75em;
+    font-weight: 700;
+    border-radius: var(--border-radius-md);
+    color: var(--light-text);
+    text-indent: -1px;
+    line-height: 1.25;
+  }
+}
+
+/**
+  * Transform up
+  */
+.transform-up-1 {
+  transform: translateY(-0.5rem) !important;
+}
+
+.transform-up-2 {
+  transform: translateY(-1rem) !important;
+}
+
+.transform-up-3 {
+  transform: translateY(-1.5rem) !important;
+}
+
+.transform-up-4 {
+  transform: translateY(-2rem) !important;
+}
+
+.transform-up-5 {
+  transform: translateY(-2.5rem) !important;
+}
+
+.transform-up-6 {
+  transform: translateY(-3rem) !important;
+}
+
+.transform-up-7 {
+  transform: translateY(-3.5rem) !important;
+}
+
+/**
+  * Transform down
+  */
+.transform-down-1 {
+  transform: translateY(0.5rem) !important;
+}
+
+.transform-down-2 {
+  transform: translateY(1rem) !important;
+}
+
+.transform-down-3 {
+  transform: translateY(1.5rem) !important;
+}
+
+.transform-down-4 {
+  transform: translateY(2rem) !important;
+}
+
+.transform-down-5 {
+  transform: translateY(2.5rem) !important;
+}
+
+.transform-down-6 {
+  transform: translateY(3rem) !important;
+}
+
+.transform-down-7 {
+  transform: translateY(3.5rem) !important;
+}
+
+.transform-down-8 {
+  transform: translateY(4rem) !important;
+}
+
+.transform-down-9 {
+  transform: translateY(4.5rem) !important;
+}
+
+.transform-down-10 {
+  transform: translateY(5rem) !important;
+}
+
+.transform-down-11 {
+  transform: translateY(5.5rem) !important;
+}
+
+.transform-down-12 {
+  transform: translateY(6rem) !important;
+}
+
+.transform-down-13 {
+  transform: translateY(6.5rem) !important;
+}
+
+.transform-down-14 {
+  transform: translateY(7rem) !important;
+}
+
+.transform-down-15 {
+  transform: translateY(7.5rem) !important;
+}
+
+.transform-down-16 {
+  transform: translateY(8rem) !important;
+}
+
+.transform-down-17 {
+  transform: translateY(8.5rem) !important;
+}
+
+.transform-down-18 {
+  transform: translateY(9rem) !important;
+}
+
+.transform-down-19 {
+  transform: translateY(9.5rem) !important;
+}
+
+.transform-down-20 {
+  transform: translateY(10rem) !important;
+}
+
+.transform-down-21 {
+  transform: translateY(10.5rem) !important;
+}
+
+.transform-down-40 {
+  transform: translateY(20rem) !important;
+}
+
+.transform-down-56 {
+  transform: translateY(28rem) !important;
+}
+
+.transform-down-60 {
+  transform: translateY(30rem) !important;
+}
+
+.mt-6 {
+  margin-top: 2.5rem !important;
+}
+
+.mt-7 {
+  margin-top: 3rem !important;
+}
+
+.mt-8 {
+  margin-top: 3.5rem !important;
+}
+
+.mt-9 {
+  margin-top: 4rem !important;
+}
+
+.mt-10 {
+  margin-top: 4.5rem !important;
+}
+.mt-11 {
+  margin-top: 5rem !important;
+}
+
+.mt-12 {
+  margin-top: 5.5rem !important;
+}
+
+.mt-13 {
+  margin-top: 6rem !important;
+}
+
+.mt-14 {
+  margin-top: 6.5rem !important;
+}
+
+.mt-15 {
+  margin-top: 7rem !important;
+}
+
+.mt-16 {
+  margin-top: 7.5rem !important;
+}
+
+.mt-17 {
+  margin-top: 8rem !important;
+}
+
+.mt-18 {
+  margin-top: 8.5rem !important;
+}
+
+.mt-19 {
+  margin-top: 9rem !important;
+}
+
+.mt-20 {
+  margin-top: 9.5rem !important;
+}
+
+.mt-21 {
+  margin-top: 10rem !important;
+}
+
+.colorful-table td, .colorful-table th {
+  color: inherit;
+}
+
+.fc {
+  min-height: unset;
+  max-height: unset;
+}
+
+/**
+  * Schedule Types
+  */
+.bg-consulta {
+  background-color: #009ee3 !important;
+}
+
+.bg-retorno {
+  background-color: #ebb71a !important;
+}
+
+.bg-possivel-retorno {
+  background-color: #cf2637 !important;
+}
+
+.bg-outros {
+  background-color: #558df3 !important;
+}
+
+.bg-agendado {
+  background-color: #5de3c8 !important;
+}
+
+/**
+  * Schedule Status
+  */
+
+.bg-confirmed {
+  background-color: #009ee3 !important;
+}
+
+.bg-canceled {
+  background-color: #cf2637 !important;
+}
+
+.bg-pending {
+  background-color: #ebb71a !important;
+}
+
+.bg-scheduled {
+  background-color: #ebb71a !important;
+}
+
+.bg-no-show {
+  background-color: #558df3 !important;
+}
+
+body {
+  margin: 0 !important;
+}
+
+.tox .tox-edit-area::before {
+  border: 2px solid var(--light-darker) !important;
+}
+
+@keyframes pulseAnimation {
+  0% {
+    box-shadow: 0 0 0 0 #4e73ee;
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(34, 193, 195, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 193, 195, 0);
+  }
+}
+
+.blink-effect {
+  background-image: linear-gradient(45deg, #3959c4, #009ee3, #4e73ee, #009ee3);
+  background-size: 300% 300%;
+  animation: pulseAnimation 2s infinite ease-in-out, colorShift 4s ease infinite;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+@keyframes colorShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}

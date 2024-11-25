@@ -1,0 +1,41 @@
+.form-builder {
+    .stage-wrap {
+        border: 1px solid var(--separator) !important;
+        border-radius: var(--border-radius-md) !important;
+    }
+    .empty {
+        background-color: #ffffff !important;
+        border-radius: var(--border-radius-md) !important;
+    }
+    .field-actions {
+        a {
+            color: var(--fc-neutral-text-color) !important;
+            border-radius: var(--border-radius-md) !important;
+            &:hover {
+                background: var(--primary) !important;
+                color: #ffffff !important;
+            }
+        }
+    }
+    .button-field {
+        .btn-default {
+            color: var(--dark-text) !important;
+        }
+    }
+    .stage-wrap {
+        .ui-sortable-placeholder {
+            background: var(--background) !important;
+            transition: all 0.5s;
+        }
+    }
+    .frmb-control {
+        li {
+            border-radius: var(--border-radius-md) !important;
+            box-shadow: inset 0 0 0 3px var(--background) !important;
+        }
+    }
+    .form-field {
+        border-radius: var(--border-radius-md) !important;
+        margin-bottom: 5px !important; 
+    }
+}

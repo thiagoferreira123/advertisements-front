@@ -1,0 +1,58 @@
+:root {
+  scroll-behavior: initial;
+}
+
+html {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  font-size: 16px;
+}
+
+body {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font);
+  font-weight: 400;
+  color: var(--body);
+  background-color: var(--background);
+  font-size: 87.5%;
+}
+
+#root {
+  opacity: 0;
+}
+
+html:not([data-show='true']) body.spinner {
+  #root {
+    opacity: 0;
+  }
+
+  &:after {
+    border-color: #7d7d7d;
+    border-right-color: transparent;
+  }
+}
+
+html[data-show='true'] {
+  scroll-behavior: smooth;
+  #root {
+    opacity: 1;
+  }
+}
+
+.hover-row:hover {
+  background-color: #f5f5f5;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.my-custom-link {
+  color: var(--body) !important;
+  font-size: 1em !important;
+}
+
+.custom-nav-link:hover {
+  background-color: #f3f3f4;
+  border-radius: 10px;
+}
