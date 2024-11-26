@@ -20,6 +20,7 @@ const Dashboard = () => {
           <IdentityConfirmation />
         ) : (
           <>
+            <ProfilePhoto />
             <AdvertisementList />
           </>
         )}
