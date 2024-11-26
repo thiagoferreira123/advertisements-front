@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Col, Form, Row, Card } from 'react-bootstrap';
+import { Col, Form, Row, Card, Button } from 'react-bootstrap';
 import { getIn, useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useQueryClient } from '@tanstack/react-query';
@@ -172,8 +172,8 @@ const CreateAdvertisement: React.FC = () => {
           ? (values[field as keyof AdvertisementFormValues] as string[]).filter((v) => v !== value)
           : [...(values[field as keyof AdvertisementFormValues] as string[]), value]
         : values[field as keyof AdvertisementFormValues] === value
-        ? ''
-        : value
+          ? ''
+          : value
     );
   };
 
@@ -188,10 +188,20 @@ const CreateAdvertisement: React.FC = () => {
           <Card className="mb-3">
             <Card.Body>
               <Row className="mb-3 g-3">
+
+                {/* Título */}
+                <Col md="12">
+                  <Form.Group className="form-group position-relative tooltip-end-top">
+                    <Form.Label className="fw-bold text-alternate">Titulo do anúncio</Form.Label>
+                    <Form.Control type="text" name="title" onChange={handleChange} value={values.title} isInvalid={!!errors.title && touched.title} />
+                    <Form.Control.Feedback type="invalid">{errors.title}</Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+
                 {/* Duração do anúncio */}
                 <Col md="12">
                   <Form.Group className="form-group position-relative tooltip-end-top">
-                    <Form.Label className="fw-bold">Duração do anúncio</Form.Label>
+                    <Form.Label className="fw-bold text-alternate">Duração do anúncio</Form.Label>
                     <BasicSelect
                       options={Object.values(AdvertisementSubscriptionCycle).map((cycle) => ({
                         label: AdvertisementSubscriptionCycleLabels[cycle],
@@ -205,19 +215,11 @@ const CreateAdvertisement: React.FC = () => {
                   </Form.Group>
                 </Col>
 
-                {/* Título */}
-                <Col md="12">
-                  <Form.Group className="form-group position-relative tooltip-end-top">
-                    <Form.Label className="fw-bold">Titulo do anúncio</Form.Label>
-                    <Form.Control type="text" name="title" onChange={handleChange} value={values.title} isInvalid={!!errors.title && touched.title} />
-                    <Form.Control.Feedback type="invalid">{errors.title}</Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
 
                 {/* Descrição */}
                 <Col md="12">
                   <Form.Group className="form-group position-relative tooltip-end-top">
-                    <Form.Label className="fw-bold">Descrição</Form.Label>
+                    <Form.Label className="fw-bold text-alternate">Descrição</Form.Label>
                     <Form.Control
                       as="textarea"
                       rows={3}
@@ -233,7 +235,7 @@ const CreateAdvertisement: React.FC = () => {
                 {/* Estado */}
                 <Col md="6">
                   <Form.Group className="form-group position-relative tooltip-end-top">
-                    <Form.Label className="fw-bold">Estado</Form.Label>
+                    <Form.Label className="fw-bold text-alternate">Estado</Form.Label>
                     <BasicSelect
                       options={states.map((state) => ({ label: state.name, value: state.id.toString() }))}
                       value={values.state}
@@ -247,7 +249,7 @@ const CreateAdvertisement: React.FC = () => {
                 {/* Cidade */}
                 <Col md="6">
                   <Form.Group className="form-group position-relative tooltip-end-top">
-                    <Form.Label className="fw-bold">Cidade</Form.Label>
+                    <Form.Label className="fw-bold text-alternate">Cidade</Form.Label>
                     <BasicSelect
                       options={cities.filter((city) => city.state_id === Number(values.state)).map((city) => ({ label: city.name, value: city.id.toString() }))}
                       value={values.city}
@@ -259,10 +261,10 @@ const CreateAdvertisement: React.FC = () => {
                 </Col>
               </Row>
 
-              <Row className="mb-3 g-3">
+              {/* <Row className="mb-3 g-3">
                 <Col md="4">
                   <Form.Group className="form-group position-relative tooltip-end-top">
-                    <Form.Label className="fw-bold">Disponibilidade de horário</Form.Label>
+                    <Form.Label className="fw-bold text-alternate">Disponibilidade de horário</Form.Label>
                     <Form.Control
                       type="text"
                       name="availability"
@@ -276,7 +278,7 @@ const CreateAdvertisement: React.FC = () => {
                 </Col>
                 <Col md="4">
                   <Form.Group className="form-group position-relative tooltip-end-top">
-                    <Form.Label className="fw-bold">Valor R$ (A combinar, deixe 0)</Form.Label>
+                    <Form.Label className="fw-bold text-alternate">Valor R$ (A combinar, deixe 0)</Form.Label>
                     <Form.Control
                       type="string"
                       name="price"
@@ -290,17 +292,17 @@ const CreateAdvertisement: React.FC = () => {
                 </Col>
                 <Col md="4">
                   <Form.Group className="form-group position-relative tooltip-end-top">
-                    <Form.Label className="fw-bold">Idade</Form.Label>
+                    <Form.Label className="fw-bold text-alternate">Idade</Form.Label>
                     <Form.Control type="number" name="age" onChange={handleChange} value={values.age} isInvalid={!!errors.age && touched.age} />
                     <Form.Control.Feedback type="invalid">{errors.age}</Form.Control.Feedback>
                   </Form.Group>
                 </Col>
-              </Row>
+              </Row> */}
 
               <Row className="mb-3 g-3">
-                <Col md="12">
+                {/* <Col md="12">
                   <Form.Group>
-                    <Form.Label className="fw-bold">Locais de atendimento</Form.Label>
+                    <Form.Label className="fw-bold text-alternate">Locais de atendimento</Form.Label>
                     {['Casa', 'Consultório', 'Meu local'].map((option) => (
                       <Form.Check
                         key={option}
@@ -317,7 +319,7 @@ const CreateAdvertisement: React.FC = () => {
                 </Col>
                 <Col md="12">
                   <Form.Group>
-                    <Form.Label className="fw-bold">Categoria</Form.Label>
+                    <Form.Label className="fw-bold text-alternate">Categoria</Form.Label>
                     {['Homem', 'Mulher', 'Crianças'].map((option) => (
                       <Form.Check
                         key={option}
@@ -334,7 +336,7 @@ const CreateAdvertisement: React.FC = () => {
                 </Col>
                 <Col md="12">
                   <Form.Group>
-                    <Form.Label className="fw-bold">Público</Form.Label>
+                    <Form.Label className="fw-bold text-alternate">Público</Form.Label>
                     {['Homens', 'Mulheres', 'Casal'].map((option) => (
                       <Form.Check
                         key={option}
@@ -348,164 +350,79 @@ const CreateAdvertisement: React.FC = () => {
                     ))}
                     <Form.Control.Feedback type="invalid">{errors.public}</Form.Control.Feedback>
                   </Form.Group>
+                </Col> */}
+                <Col md="12">
+                  <Form.Group>
+                    <Form.Label className="fw-bold text-alternate">Locais de atendimento</Form.Label>
+                    <div className="d-flex flex-wrap">
+                      {['Casa', 'Consultório', 'Meu local'].map((option) => (
+                        <Button
+                          key={option}
+                          variant={values.locations.includes(option) ? 'primary' : 'outline-primary'}
+                          onClick={() => handleCheckboxChange('locations', option)}
+                          className="me-2 mb-2"
+                        >
+                          {option}
+                        </Button>
+                      ))}
+                    </div>
+                    {errors.locations && touched.locations && (
+                      <div className="text-danger">{errors.locations}</div>
+                    )}
+                  </Form.Group>
+                </Col>
+                <Col md="12">
+                  <Form.Group>
+                    <Form.Label className="fw-bold text-alternate">Categoria</Form.Label>
+                    <div className="d-flex flex-wrap">
+                      {['Homem', 'Mulher', 'Crianças'].map((option) => (
+                        <Button
+                          key={option}
+                          variant={values.categories.includes(option) ? 'primary' : 'outline-primary'}
+                          onClick={() => handleCheckboxChange('categories', option)}
+                          className="me-2 mb-2"
+                        >
+                          {option}
+                        </Button>
+                      ))}
+                    </div>
+                    {errors.categories && touched.categories && (
+                      <div className="text-danger">{errors.categories}</div>
+                    )}
+                  </Form.Group>
+                </Col>
+                <Col md="12">
+                  <Form.Group>
+                    <Form.Label className="fw-bold text-alternate">Público</Form.Label>
+                    <div className="d-flex flex-wrap">
+                      {['Homens', 'Mulheres', 'Casal'].map((option) => (
+                        <Button
+                          key={option}
+                          variant={values.public.includes(option) ? 'primary' : 'outline-primary'}
+                          onClick={() => handleCheckboxChange('public', option)}
+                          className="me-2 mb-2"
+                        >
+                          {option}
+                        </Button>
+                      ))}
+                    </div>
+                    {errors.public && touched.public && (
+                      <div className="text-danger">{errors.public}</div>
+                    )}
+                  </Form.Group>
                 </Col>
               </Row>
-            </Card.Body>
-          </Card>
-
-          {/* Características físicas */}
-          <Card className="mb-3">
-            <Card.Body>
-              <h5 className="fw-bold">Características físicas</h5>
-              {Object.entries(physical_characteristics).map(([characteristicName, options]) => (
-                <Form.Group key={characteristicName}>
-                  <Form.Label className="fw-bold">{characteristicName}</Form.Label>
-                  {options.map((option) => (
-                    <Form.Check
-                      key={option}
-                      label={option}
-                      value={option}
-                      checked={values.physical_characteristics[characteristicName]?.includes(option) || false}
-                      onChange={() => {
-                        const selectedOptions = values.physical_characteristics[characteristicName] || [];
-                        if (selectedOptions.includes(option)) {
-                          setFieldValue(
-                            `physical_characteristics.${characteristicName}`,
-                            selectedOptions.filter((item) => item !== option)
-                          );
-                        } else {
-                          setFieldValue(`physical_characteristics.${characteristicName}`, [...selectedOptions, option]);
-                        }
-                      }}
-                      className={errors.physical_characteristics && errors.physical_characteristics[characteristicName] ? 'is-invalid' : ''}
-                    />
-                  ))}
-                  <Form.Control.Feedback type="invalid">
-                    {errors.physical_characteristics && errors.physical_characteristics[characteristicName]}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              ))}
-            </Card.Body>
-          </Card>
-
-          {/* Serviços oferecidos e não oferecidos */}
-          <Card className="mb-3">
-            <Card.Body>
-              <h5 className="fw-bold">Serviços oferecidos e não oferecidos</h5>
-              {Object.entries(values.services_offered_and_not_offered).map(([key, service]) => (
-                <Form.Group key={key}>
-                  <Form.Check
-                    type="checkbox"
-                    label={service.service}
-                    checked={service.offered === 'Yes'}
-                    onChange={(e) => {
-                      // Atualizamos apenas o campo `offered` do serviço correspondente
-                      setFieldValue(`services_offered_and_not_offered.${key}.offered`, e.target.checked ? 'Yes' : '');
-                    }}
-                  />
-                </Form.Group>
-              ))}
-            </Card.Body>
-          </Card>
-
-          {/* Horários de expediente */}
-          <Card className="mb-3">
-            <Card.Body>
-              <h5 className="fw-bold">Horários de expediente</h5>
-              {Object.entries(working_hours).map(([day, times]) => (
-                <Form.Group key={day}>
-                  <Form.Label className="fw-bold">{day}</Form.Label>
-                  <div className="d-flex">
-                    <div className="me-2">
-                      <Form.Label>Início</Form.Label>
-                      <InputMask
-                        mask="99:99"
-                        placeholder="HH:MM"
-                        value={getIn(values, `working_hours.${day}.inicio`)}
-                        onChange={(e) => {
-                          setFieldValue(`working_hours.${day}.inicio`, e.target.value);
-                        }}
-                        onBlur={handleBlur}
-                        className="form-control"
-                      />
-                    </div>
-                    <div>
-                      <Form.Label>Fim</Form.Label>
-                      <InputMask
-                        mask="99:99"
-                        placeholder="HH:MM"
-                        value={getIn(values, `working_hours.${day}.fim`)}
-                        onChange={(e) => setFieldValue(`working_hours.${day}.fim`, e.target.value)}
-                        onBlur={handleBlur}
-                        className="form-control"
-                      />
-                    </div>
-                  </div>
-                  {/* Exemplo de exibição de erros */}
-                  {errors.working_hours && errors.working_hours[day] && touched.working_hours && touched.working_hours[day] && (
-                    <div className="text-danger">{errors.working_hours[day].inicio || errors.working_hours[day].fim}</div>
-                  )}
-                </Form.Group>
-              ))}
-            </Card.Body>
-          </Card>
-
-          {/* Valores */}
-          <Card className="mb-3">
-            <Card.Body>
-              <div className="mb-3">
-                <h5 className="fw-bold">Valores</h5>
-                {Object.entries(valueFieldOptions).map(([key, value]) => (
-                  <Form.Group key={key}>
-                    <Form.Label className="fw-bold">{key}</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder={value}
-                      value={getIn(values, `values.${key}`)}
-                      onChange={(e) => {
-                        setFieldValue(`values.${key}`, formatCurrency(e.target.value));
-                      }}
-                      onBlur={handleBlur}
-                      className="form-control"
-                    />
-                    {/* Exemplo de exibição de erros */}
-                    {errors.values && errors.values[key] && touched.values && touched.values[key] && <div className="text-danger">{errors.values[key]}</div>}
-                  </Form.Group>
-                ))}
-              </div>
-
-              <div>
-                <h5 className="fw-bold">Formas de pagamento</h5>
-                {payment_methods.map((option) => (
-                  <Form.Check
-                    type="checkbox"
-                    key={option}
-                    label={option}
-                    value={option}
-                    checked={values.payment_methods[option]}
-                    onChange={() => {
-                      const selectedOptions = values.payment_methods || {};
-                      if (selectedOptions[option]) {
-                        setFieldValue(`payment_methods.${option}`, false);
-                      } else {
-                        setFieldValue(`payment_methods.${option}`, true);
-                      }
-                    }}
-                    className={errors.payment_methods ? 'is-invalid' : ''}
-                  />
-                ))}
-              </div>
             </Card.Body>
           </Card>
 
           {/* Mídia */}
           <Card className="mb-3">
             <Card.Body>
-              <h5 className="fw-bold">Mídia</h5>
+              <h5 className="fw-bold text-alternate">Mídia</h5>
               <Row className="mb-3 g-3">
                 {/* Fotos */}
                 <Col md="12">
-                  <h5 className="fw-bold">Fotos</h5>
+                  <h5 className="fw-bold text-alternate">Fotos</h5>
                   <MultipleDropzoneComponent
                     endpoint="/advertisements/image"
                     onChange={handleChangeMultiplePhotos}
@@ -559,7 +476,7 @@ const CreateAdvertisement: React.FC = () => {
 
                 {/* Vídeos */}
                 <Col md="12">
-                  <h5 className="fw-bold">Vídeos</h5>
+                  <h5 className="fw-bold text-alternate">Vídeos</h5>
                   <MultipleDropzoneComponent
                     endpoint="/advertisements/video"
                     onChange={handleChangeMultipleVideos}
@@ -612,6 +529,251 @@ const CreateAdvertisement: React.FC = () => {
                   </Row>
                 </Col>
               </Row>
+            </Card.Body>
+          </Card>
+
+          {/* Características físicas */}
+          {/* <Card className="mb-3">
+            <Card.Body>
+              <h5 className="fw-bold text-alternate">Características físicas</h5>
+              {Object.entries(physical_characteristics).map(([characteristicName, options]) => (
+                <Form.Group key={characteristicName}>
+                  <Form.Label className="fw-bold text-alternate">{characteristicName}</Form.Label>
+                  {options.map((option) => (
+                    <Form.Check
+                      key={option}
+                      label={option}
+                      value={option}
+                      checked={values.physical_characteristics[characteristicName]?.includes(option) || false}
+                      onChange={() => {
+                        const selectedOptions = values.physical_characteristics[characteristicName] || [];
+                        if (selectedOptions.includes(option)) {
+                          setFieldValue(
+                            `physical_characteristics.${characteristicName}`,
+                            selectedOptions.filter((item) => item !== option)
+                          );
+                        } else {
+                          setFieldValue(`physical_characteristics.${characteristicName}`, [...selectedOptions, option]);
+                        }
+                      }}
+                      className={errors.physical_characteristics && errors.physical_characteristics[characteristicName] ? 'is-invalid' : ''}
+                    />
+                  ))}
+                  <Form.Control.Feedback type="invalid">
+                    {errors.physical_characteristics && errors.physical_characteristics[characteristicName]}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              ))}
+            </Card.Body>
+          </Card> */}
+          <Card className="mb-3">
+            <Card.Body>
+              <h5 className="fw-bold text-alternate">Características físicas</h5>
+              {Object.entries(physical_characteristics).map(
+                ([characteristicName, options]) => (
+                  <Form.Group key={characteristicName}>
+                    <Form.Label className="fw-bold text-alternate">{characteristicName}</Form.Label>
+                    <div>
+                      {options.map((option) => {
+                        const isSelected = values.physical_characteristics[
+                          characteristicName
+                        ]?.includes(option);
+                        return (
+                          <Button
+                            key={option}
+                            variant={isSelected ? "primary" : "outline-primary"}
+                            onClick={() => {
+                              const selectedOptions =
+                                values.physical_characteristics[characteristicName] || [];
+                              if (selectedOptions.includes(option)) {
+                                setFieldValue(
+                                  `physical_characteristics.${characteristicName}`,
+                                  selectedOptions.filter((item) => item !== option)
+                                );
+                              } else {
+                                setFieldValue(
+                                  `physical_characteristics.${characteristicName}`,
+                                  [...selectedOptions, option]
+                                );
+                              }
+                            }}
+                            className={
+                              errors.physical_characteristics &&
+                                errors.physical_characteristics[characteristicName]
+                                ? "is-invalid"
+                                : ""
+                            }
+                            style={{ margin: "0 5px 5px 0" }}
+                          >
+                            {option}
+                          </Button>
+                        );
+                      })}
+                    </div>
+                    <Form.Control.Feedback type="invalid">
+                      {errors.physical_characteristics &&
+                        errors.physical_characteristics[characteristicName]}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                )
+              )}
+            </Card.Body>
+          </Card>
+
+
+          {/* Serviços oferecidos e não oferecidos */}
+          {/* <Card className="mb-3">
+            <Card.Body>
+              <h5 className="fw-bold text-alternate">Serviços oferecidos e não oferecidos</h5>
+              {Object.entries(values.services_offered_and_not_offered).map(([key, service]) => (
+                <Form.Group key={key}>
+                  <Form.Check
+                    type="checkbox"
+                    label={service.service}
+                    checked={service.offered === 'Yes'}
+                    onChange={(e) => {
+                      // Atualizamos apenas o campo `offered` do serviço correspondente
+                      setFieldValue(`services_offered_and_not_offered.${key}.offered`, e.target.checked ? 'Yes' : '');
+                    }}
+                  />
+                </Form.Group>
+              ))}
+            </Card.Body>
+          </Card> */}
+          <Card className="mb-3">
+            <Card.Body>
+              <h5 className="fw-bold text-alternate">Serviços oferecidos</h5>
+              <div className="d-flex flex-wrap">
+                {Object.entries(values.services_offered_and_not_offered).map(
+                  ([key, service]) => (
+                    <Button
+                      key={key}
+                      variant={service.offered === "Yes" ? "primary" : "outline-primary"}
+                      onClick={() => {
+                        // Atualizamos apenas o campo `offered` do serviço correspondente
+                        setFieldValue(
+                          `services_offered_and_not_offered.${key}.offered`,
+                          service.offered === "Yes" ? "" : "Yes"
+                        );
+                      }}
+                      className="me-2 mb-2" // Adiciona espaçamento entre botões
+                    >
+                      {service.service}
+                    </Button>
+                  )
+                )}
+              </div>
+            </Card.Body>
+          </Card>
+
+
+
+          {/* Horários de expediente */}
+          <Card className="mb-3">
+            <Card.Body>
+              <h5 className="fw-bold text-alternate">Horários de expediente</h5>
+              {Object.entries(working_hours).map(([day, times]) => (
+                <Form.Group key={day}>
+                  <Form.Label className="fw-bold text-alternate">{day}</Form.Label>
+                  <div className="d-flex">
+                    <div className="me-2 mt-3 mb-3">
+                      <Form.Label className='text-alternate'>Início</Form.Label>
+                      <InputMask
+                        mask="99:99"
+                        placeholder="00:00"
+                        value={getIn(values, `working_hours.${day}.inicio`)}
+                        onChange={(e) => {
+                          setFieldValue(`working_hours.${day}.inicio`, e.target.value);
+                        }}
+                        onBlur={handleBlur}
+                        className="form-control"
+                      />
+                    </div>
+                    <div className='mt-3'>
+                      <Form.Label className='text-alternate'>Fim</Form.Label>
+                      <InputMask
+                        mask="99:99"
+                        placeholder="00:00"
+                        value={getIn(values, `working_hours.${day}.fim`)}
+                        onChange={(e) => setFieldValue(`working_hours.${day}.fim`, e.target.value)}
+                        onBlur={handleBlur}
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                  {/* Exemplo de exibição de erros */}
+                  {errors.working_hours && errors.working_hours[day] && touched.working_hours && touched.working_hours[day] && (
+                    <div className="text-danger">{errors.working_hours[day].inicio || errors.working_hours[day].fim}</div>
+                  )}
+                </Form.Group>
+              ))}
+            </Card.Body>
+          </Card>
+
+          {/* Valores */}
+          <Card className="mb-3">
+            <Card.Body>
+
+              <div className="mb-3">
+                <h5 className="fw-bold text-alternate">Valores</h5>
+                <div className="d-flex flex-wrap align-items-center">
+                  {Object.entries(valueFieldOptions).map(([key, value]) => (
+                    <div key={key} className="me-3 mb-3">
+                      <Form.Group>
+                        <Form.Label className="fw-bold text-alternate">{key}</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder={value}
+                          value={getIn(values, `values.${key}`)}
+                          onChange={(e) => {
+                            setFieldValue(
+                              `values.${key}`,
+                              formatCurrency(e.target.value)
+                            );
+                          }}
+                          onBlur={handleBlur}
+                          className="form-control"
+                        />
+                        {/* Exemplo de exibição de erros */}
+                        {errors.values &&
+                          errors.values[key] &&
+                          touched.values &&
+                          touched.values[key] && (
+                            <div className="text-danger">{errors.values[key]}</div>
+                          )}
+                      </Form.Group>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+
+              <div>
+                <h5 className="fw-bold text-alternate">Formas de pagamento</h5>
+                <div>
+                  {payment_methods.map((option) => (
+                    <Button
+                      key={option}
+                      variant={values.payment_methods[option] ? "primary" : "outline-primary"}
+                      onClick={() => {
+                        const selectedOptions = values.payment_methods || {};
+                        setFieldValue(
+                          `payment_methods.${option}`,
+                          !selectedOptions[option]
+                        );
+                      }}
+                      className={errors.payment_methods ? "is-invalid mb-2" : "mb-2"}
+                      style={{ marginRight: "5px" }}
+                    >
+                      {option}
+                    </Button>
+                  ))}
+                </div>
+                {errors.payment_methods && (
+                  <div className="invalid-feedback d-block">{errors.payment_methods}</div>
+                )}
+              </div>
+
             </Card.Body>
           </Card>
 

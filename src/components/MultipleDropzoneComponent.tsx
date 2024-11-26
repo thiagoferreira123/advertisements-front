@@ -85,7 +85,7 @@ const MultipleDropzoneComponent = (
         classNames={{ inputLabelWithFiles: defaultClassNames.inputLabel }}
         inputContent={
           <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            Clique aqui para <br /> selecionar os arquivos
+            Enviar<br />foto
           </div>
         }
       />

@@ -1,4 +1,10 @@
 export const physical_characteristics = {
+  "Peso": [
+    "",
+  ],
+  "Altura": [
+    "",
+  ],
   "Raça": [
     "Labrador",
     "Pastor Alemão",
@@ -30,12 +36,6 @@ export const physical_characteristics = {
     "Filhote",
     "Adulto",
     "Idoso"
-  ],
-  "Peso": [
-    "",
-  ],
-  "Altura": [
-    "",
   ],
   "Cor dos Olhos": [
     "Castanho",

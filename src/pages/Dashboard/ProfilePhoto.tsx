@@ -62,10 +62,9 @@ const ProfilePhoto = () => {
   }, [user]);
 
   return (
-    <Col md={8} className="mt-4">
-      <h5 className="fw-bold text-center">Foto de Perfil</h5>
+    <Col md={8}>
       <Card className="text-center position-relative">
-        <Card.Body className="sh-30 d-flex flex-column justify-content-end align-items-center">
+        <Card.Body className="sh-40 d-flex flex-column justify-content-end align-items-center p-2">
           {user?.cover && <img className="w-100 h-100 img-fluid rounded" src={user.cover} alt="Avatar" />}
           <form onSubmit={handleSubmit} className="sw-16">
             {/* Profile Photo */}
@@ -102,7 +101,7 @@ const ProfilePhoto = () => {
                   type="button"
                   loadingText=" "
                   size="sm"
-                  variant="outline-danger"
+                  variant="danger"
                   onClickHandler={() => handleRemoveFile('profile_photo', setIsRemovingProfilePhoto, '/advertiser/profile-photo')}
                   className="btn-icon btn-icon-only position-absolute"
                   style={{
@@ -119,8 +118,8 @@ const ProfilePhoto = () => {
               <div className="d-block invalid-tooltip">{getIn(errors, 'profile_photo')}</div>
             )}
           </form>
-          <Button type="button" size="sm" variant="outline-primary" className="position-absolute end-0 bottom-0 m-2" onClick={showUploadCoverPhotoModal}>
-            Adicionar foto de capa
+          <Button type="button" size="sm" variant="primary" className="position-absolute end-0 bottom-0 m-2 mb-3 me-3 btn-icon btn-icon-only" onClick={showUploadCoverPhotoModal}>
+          <CsLineIcons icon="edit" />
           </Button>
         </Card.Body>
       </Card>

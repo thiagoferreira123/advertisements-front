@@ -29,9 +29,22 @@ const AdvertisementList = () => {
 
   return (
     <Col md={8}>
-      <h5 className="fw-bold">Lista de anúncios</h5>
-      <Card>
+      <Card className='mt-3'>
         <Card.Body className="mb-n3 border-last-none">
+        <Row className="g-0 h-100 align-items-center mb-3">
+          <Col xs="auto" className="pe-2">
+            <div className="bg-gradient-light sh-5 sw-5 rounded-xl d-flex justify-content-center align-items-center">
+              <CsLineIcons icon="notification" className="text-white" />
+            </div>
+          </Col>
+          <Col>
+            <Row className="gx-2 d-flex align-content-center">
+              <Col xs="12" className="col-12 d-flex">
+                <div className="d-flex align-items-center small-title fw-bold">Seus anúncios</div>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
           {result.isLoading ? (
             <div className="sh-20 d-flex align-items-center justify-content-center">
               <StaticLoading />
@@ -39,7 +52,7 @@ const AdvertisementList = () => {
           ) : result.isError ? (
             <div className="sh-20 d-flex align-items-center justify-content-center">Ocorreu um erro ao buscar os anúncios</div>
           ) : !result.data || result.data.length === 0 ? (
-            <div className="sh-20 d-flex align-items-center justify-content-center">Nenhum anúncio encontrado</div>
+            <div className="sh-20 d-flex align-items-center justify-content-center">Você ainda não possui anúncios 🌶️</div>
           ) : (
             result.data?.map((advertisement) => (
               <div className="border-bottom border-separator-light mb-2 pb-2">
@@ -62,9 +75,9 @@ const AdvertisementList = () => {
                             </div>
                             <div>
                               {!advertisement.payments.filter((payment) => payment.status === 'CONFIRMED').length ? (
-                              <Button variant="warning" size="sm" className="me-1 btn-icon mt-1" as="a" href={advertisement.paymentLink} target="_blank">
-                                Pagamento pendente clique para pagar
-                                <CsLineIcons icon="clock" className="ms-1" size={12} />
+                                <Button variant="warning" size="sm" className="me-1 btn-icon mt-1" as="a" href={advertisement.paymentLink} target="_blank">
+                                  Pagamento pendente clique para pagar
+                                  <CsLineIcons icon="clock" className="ms-1" size={12} />
                                 </Button>
                               ) : null}
                             </div>

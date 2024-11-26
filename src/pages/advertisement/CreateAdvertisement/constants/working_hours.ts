@@ -1,29 +1,29 @@
 export const working_hours = {
-  "segunda-feira": {
+  "Segunda-feira": {
     "inicio": "",
     "fim": ""
   },
-  "terca-feira": {
+  "Terca-feira": {
     "inicio": "",
     "fim": ""
   },
-  "quarta-feira": {
+  "Quarta-feira": {
     "inicio": "",
     "fim": ""
   },
-  "quinta-feira": {
+  "Quinta-feira": {
     "inicio": "",
     "fim": ""
   },
-  "sexta-feira": {
+  "Sexta-feira": {
     "inicio": "",
     "fim": ""
   },
-  "sabado": {
+  "Sábado": {
     "inicio": "",
     "fim": ""
   },
-  "domingo": {
+  "Domingo": {
     "inicio": "",
     "fim": ""
   }

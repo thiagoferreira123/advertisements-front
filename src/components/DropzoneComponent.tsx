@@ -66,7 +66,7 @@ const DropzoneComponent = ({name, endpoint, placeholder, onChange}: DropzoneComp
       maxSizeBytes={16 * 1024 * 1024} // 16 MB
       inputWithFilesContent={null}
       classNames={{ inputLabelWithFiles: defaultClassNames.inputLabel }}
-      inputContent={placeholder ? placeholder : "Clique aqui para selecionar o arquivo"}
+      inputContent={placeholder ? placeholder : "Enviar foto"}
     />
   );
 };
