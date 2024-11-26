@@ -83,7 +83,11 @@ const MultipleDropzoneComponent = (
         maxSizeBytes={maxSizeBytes}
         inputWithFilesContent={null}
         classNames={{ inputLabelWithFiles: defaultClassNames.inputLabel }}
-        inputContent={placeholder ? placeholder : 'Clique aqui para selecionar os arquivos'}
+        inputContent={
+          <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            Clique aqui para <br /> selecionar os arquivos
+          </div>
+        }
       />
     );
   }
