@@ -12,7 +12,13 @@ import AsyncButton from '@/components/AsyncButton';
 import { useAdvertisement } from '../hook';
 import { notify } from '@/components/toast/NotificationIcon';
 import { AxiosError } from 'axios';
-import { AdvertisementFormValues, AdvertisementPhotosFormValues, AdvertisementVideosFormValues } from '../hook/types';
+import {
+  AdvertisementFormValues,
+  AdvertisementPhotosFormValues,
+  AdvertisementSubscriptionCycle,
+  AdvertisementSubscriptionCycleLabels,
+  AdvertisementVideosFormValues,
+} from '../hook/types';
 import BasicSelect from '@/components/BasicSelect';
 import { cities, states } from './constants/cities_and_states';
 import { formatCurrency } from '@/helpers/GenericScripts';
@@ -182,6 +188,23 @@ const CreateAdvertisement: React.FC = () => {
           <Card className="mb-3">
             <Card.Body>
               <Row className="mb-3 g-3">
+                {/* Duração do anúncio */}
+                <Col md="12">
+                  <Form.Group className="form-group position-relative tooltip-end-top">
+                    <Form.Label className="fw-bold">Duração do anúncio</Form.Label>
+                    <BasicSelect
+                      options={Object.values(AdvertisementSubscriptionCycle).map((cycle) => ({
+                        label: AdvertisementSubscriptionCycleLabels[cycle],
+                        value: cycle,
+                      }))}
+                      value={values.cycle}
+                      onChange={(option) => setFieldValue('cycle', option.value)}
+                      className={!!errors.cycle ? 'is-invalid' : ''}
+                    />
+                    <Form.Control.Feedback type="invalid">{errors.cycle}</Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+
                 {/* Título */}
                 <Col md="12">
                   <Form.Group className="form-group position-relative tooltip-end-top">
@@ -605,6 +628,7 @@ const CreateAdvertisement: React.FC = () => {
 
 const initialValues: AdvertisementFormValues = {
   name: '',
+  cycle: AdvertisementSubscriptionCycle.WEEKLY,
   advertiser_id: '',
   state: '',
   city: '',

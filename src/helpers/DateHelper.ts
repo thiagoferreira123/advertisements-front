@@ -79,6 +79,10 @@ export function convertIsoToBrDate(date: string): string {
   return date.split('-').reverse().join('/');
 }
 
+export function convertIsoDateStringToBrDateString(date: string): string {
+  return new Date(date.slice(0, 10) + ' 00:00:00').toLocaleDateString('pt-BR');
+}
+
 export function convertInvertedIsoToIso(date: string): string {
   return date.split('-').reverse().join('-');
 }

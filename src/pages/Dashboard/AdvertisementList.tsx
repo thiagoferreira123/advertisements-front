@@ -7,6 +7,8 @@ import { useQuery } from '@tanstack/react-query';
 import StaticLoading from '@/components/loading/StaticLoading';
 import { useDeleteAdvertisementConfirmationModalStore } from './hooks/modals/DeleteAdvertisementConfirmationModalStore';
 import DeleteAdvertisementConfirmationModal from './modals/DeleteAdvertisementConfirmationModal';
+import { AdvertisementSubscriptionCycleLabels } from '../advertisement/hook/types';
+import { convertIsoDateStringToBrDateString, parseIsoToDate } from '@/helpers/DateHelper';
 
 const AdvertisementList = () => {
   const { getAdvertisements } = useAdvertisement();
@@ -41,9 +43,9 @@ const AdvertisementList = () => {
           ) : (
             result.data?.map((advertisement) => (
               <div className="border-bottom border-separator-light mb-2 pb-2">
-                <Row className="g-0 sh-6">
+                <Row className="g-0 sh-12">
                   <Col xs="auto">
-                    <img src={advertisement.photos[0]?.photo_url ?? '/img/profile/profile-6.webp'} className="card-img rounded-xl sh-6 sw-6" alt="thumb" />
+                    <img src={advertisement.photos[0]?.photo_url ?? '/img/profile/profile-6.webp'} className="card-img rounded-xl sh-12 sw-12" alt="thumb" />
                   </Col>
                   <Col>
                     <div className="d-flex flex-row pt-0 pb-0 ps-3 pe-0 h-100 align-items-center justify-content-between">
@@ -51,18 +53,34 @@ const AdvertisementList = () => {
                         <div className="fw-bold">{advertisement.title}</div>
                         <div>
                           {' '}
-                          {advertisement.categories.map((category) => (
-                            <Badge className="me-1" key={category}>
-                              {category}
-                            </Badge>
-                          ))}
+                          <div>
+                            <div>
+                              <Badge className="me-1">Duração do anúncio: {AdvertisementSubscriptionCycleLabels[advertisement.cycle]}</Badge>
+                            </div>
+                            <div>
+                              <Badge className="me-1">Data da criação: {convertIsoDateStringToBrDateString(advertisement.date_of_creation)}</Badge>
+                            </div>
+                            <div>
+                              {!advertisement.payments.filter((payment) => payment.status === 'CONFIRMED').length ? (
+                              <Button variant="warning" size="sm" className="me-1 btn-icon mt-1" as="a" href={advertisement.paymentLink} target="_blank">
+                                Pagamento pendente clique para pagar
+                                <CsLineIcons icon="clock" className="ms-1" size={12} />
+                                </Button>
+                              ) : null}
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <div className="d-flex">
                         <Link to={`${appRoot}/advertisement/edit/${advertisement.advertisement_id}`} className="btn btn-outline-secondary btn-sm ms-1">
                           Editar
                         </Link>
-                        <Button variant="outline-secondary" size="sm" className="btn-icon btn-icon-only ms-1" onClick={() => handleSelectAdvertisementToRemove(advertisement)}>
+                        <Button
+                          variant="outline-secondary"
+                          size="sm"
+                          className="btn-icon btn-icon-only ms-1"
+                          onClick={() => handleSelectAdvertisementToRemove(advertisement)}
+                        >
                           <CsLineIcons icon="bin" />
                         </Button>
                       </div>

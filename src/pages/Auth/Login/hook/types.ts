@@ -25,7 +25,10 @@ export type CreateAuthStore = {
   register: (values: RegisterValues) => Promise<void>;
   forgotPassword: (values: { email: string }) => Promise<void>;
   resetPassword: (values: ResetPasswordValues) => Promise<void>;
+
   updateIdentificationImages: (values: UpdateIdentificationImagesDto) => Promise<boolean>;
+  updateProfilePhoto: (values: UpdateProfilePhotoDto) => Promise<boolean>;
+  updateCoverPhoto: (values: UpdateCoverPhotoDto) => Promise<boolean>;
   logout: () => void;
   checkAuth: () => Promise<boolean>;
   getUser: () => User | null;
@@ -51,6 +54,8 @@ export interface User {
   reset_password_token_expires?: string;
   stripe_customer_id?: string;
   checked?: boolean;
+  profile_photo?: string;
+  cover?: string;
 }
 
 export enum Role {
@@ -61,4 +66,12 @@ export enum Role {
 type UpdateIdentificationImagesDto = {
   document_photo: string;
   document_selfie: string;
+}
+
+type UpdateProfilePhotoDto = {
+  profile_photo: string;
+}
+
+type UpdateCoverPhotoDto = {
+  cover: string;
 }

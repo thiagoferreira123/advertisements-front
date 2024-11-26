@@ -59,6 +59,30 @@ export const useAuth = create<CreateAuthStore>((set) => ({
     return true;
   },
 
+  updateProfilePhoto: async (payload) => {
+    await api.put('/advertiser', payload);
+
+    set((state) => {
+      if (!state.user) return state;
+
+      return { user: { ...state.user, profile_photo: payload.profile_photo } };
+    });
+
+    return true;
+  },
+
+  updateCoverPhoto: async (payload) => {
+    await api.put('/advertiser', payload);
+
+    set((state) => {
+      if (!state.user) return state;
+
+      return { user: { ...state.user, cover: payload.cover } };
+    });
+
+    return true;
+  },
+
   checkAuth: async () => {
     try {
       const { data } = await api.get('/advertiser/check-auth');

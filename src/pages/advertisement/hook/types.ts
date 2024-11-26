@@ -13,6 +13,7 @@ export type AdvertisementStore = {
 
 export interface Advertisement {
   advertisement_id: string;
+  cycle: AdvertisementSubscriptionCycle;
   advertiser_id: string;
   name: string;
   state: string;
@@ -22,6 +23,7 @@ export interface Advertisement {
   availability: string;
   price: number;
   age: number;
+  paymentLink: string;
   locations: string[];
   categories: string[];
   public: string[];
@@ -50,10 +52,19 @@ export interface Advertisement {
   };
   photos: AdvertisementPhotosFormValues[];
   videos: AdvertisementVideosFormValues[];
+  payments: Payment[];
+  date_of_creation: string;
+}
+
+export interface Payment {
+  payment_id: string;
+  payment_method: string;
+  status: string;
 }
 
 export interface AdvertisementFormValues {
   advertiser_id: string;
+  cycle: AdvertisementSubscriptionCycle;
   name: string;
   state: string;
   city: string;
@@ -99,3 +110,20 @@ export interface AdvertisementPhotosFormValues {
 export interface AdvertisementVideosFormValues {
   video_url: string;
 }
+
+export enum AdvertisementSubscriptionCycle {
+  WEEKLY = 'WEEKLY',
+  BIWEEKLY = 'BIWEEKLY',
+  MONTHLY = 'MONTHLY',
+  SEMIANNUALLY = 'SEMIANNUALLY',
+  YEARLY = 'YEARLY',
+}
+
+export enum AdvertisementSubscriptionCycleLabels {
+  WEEKLY = 'Semanal',
+  BIWEEKLY = 'Quinzenal',
+  MONTHLY = 'Mensal',
+  SEMIANNUALLY = 'Semestral',
+  YEARLY = 'Anual',
+}
+
