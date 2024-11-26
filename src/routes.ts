@@ -6,6 +6,7 @@ const dashboard = lazy(() => import('./pages/Dashboard'));
 
 const advertisement = {
   create: lazy(() => import('./pages/advertisement/CreateAdvertisement')),
+  edit: lazy(() => import('./pages/advertisement/EditAdvertisement')),
 };
 
 export const appRoot = DEFAULT_PATHS.APP.endsWith('/') ? DEFAULT_PATHS.APP.slice(0, DEFAULT_PATHS.APP.length - 1) : DEFAULT_PATHS.APP;
@@ -28,6 +29,13 @@ const routesAndMenuItems: RoutesAndMenuItems = {
       path: `${appRoot}/advertisement/create`,
       label: 'createAdvertisement',
       component: advertisement.create,
+      roles: [],
+      hideInMenu: true,
+    },
+    {
+      path: `${appRoot}/advertisement/edit/:id`,
+      label: 'editAdvertisement',
+      component: advertisement.edit,
       roles: [],
       hideInMenu: true,
     },

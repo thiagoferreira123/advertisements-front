@@ -1,7 +1,6 @@
 import { Badge, Button, Card, Col, Row } from 'react-bootstrap';
 import CsLineIcons from '../../cs-line-icons/CsLineIcons';
 import { Link } from 'react-router-dom';
-import { DEFAULT_PATHS } from '@/config';
 import { appRoot } from '@/routes';
 import { useAdvertisement } from '../advertisement/CreateAdvertisement/hook';
 import { useQuery } from '@tanstack/react-query';
@@ -57,9 +56,9 @@ const AdvertisementList = () => {
                         </div>
                       </div>
                       <div className="d-flex">
-                        <Button variant="outline-secondary" size="sm" className="ms-1">
+                        <Link to={`${appRoot}/advertisement/edit/${advertisement.advertisement_id}`} className="btn btn-outline-secondary btn-sm ms-1">
                           Editar
-                        </Button>
+                        </Link>
                         <Button variant="outline-secondary" size="sm" className="btn-icon btn-icon-only ms-1">
                           <CsLineIcons icon="bin" />
                         </Button>

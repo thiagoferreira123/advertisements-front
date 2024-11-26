@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Form, Row, Card } from 'react-bootstrap';
 import { getIn, useFormik } from 'formik';
 import * as Yup from 'yup';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { IFileWithMeta } from 'react-dropzone-uploader';
 import InputMask from 'react-input-mask';
 
@@ -22,8 +22,12 @@ import { services_offered_and_not_offered } from './constants/services_offered_a
 import { working_hours } from './constants/working_hours';
 import { valueFieldOptions } from './constants/values';
 import { payment_methods } from './constants/payment_methods';
+import { useParams } from 'react-router-dom';
+import { AppException } from '@/helpers/ErrorHelpers';
+import StaticLoading from '@/components/loading/StaticLoading';
 
-const CreateAdvertisement: React.FC = () => {
+const EditAdvertisement: React.FC = () => {
+  const { id } = useParams();
   const queryClient = useQueryClient();
 
   const [isSaving, setIsSaving] = useState(false);
@@ -32,16 +36,32 @@ const CreateAdvertisement: React.FC = () => {
   const [isRemovingPhotoUrls, setIsRemovingPhotoUrls] = useState<string[]>([]);
   const [isRemovingVideoUrls, setIsRemovingVideoUrls] = useState<string[]>([]);
 
-  const { createAdvertisement } = useAdvertisement();
+  const { updateAdvertisement, getAdvertisement } = useAdvertisement();
+
+  const getAdvertisement_ = async () => {
+    try {
+      if (!id) throw new AppException('ID do anúncio não encontrado');
+      const advertisement = await getAdvertisement(id);
+      return advertisement;
+    } catch (error) {
+      if (error instanceof AppException) notify(error.message, 'Erro', 'close', 'danger');
+      console.error(error);
+      throw error;
+    }
+  };
 
   const onSubmit = async (values: AdvertisementFormValues) => {
     try {
-      setIsSaving(true);
-      await createAdvertisement(values);
+      if (!id) throw new AppException('ID do anúncio não encontrado');
 
-      notify('Anúncio criado com sucesso', 'Success', 'check-circle', 'success');
+      setIsSaving(true);
+      await updateAdvertisement(id, values);
+
+      notify('Anúncio atualizado com sucesso', 'Success', 'check-circle', 'success');
     } catch (error) {
       if (error instanceof AxiosError) notify(error.response?.data.message, 'Erro', 'close', 'danger');
+      else if (error instanceof AppException) notify(error.message, 'Erro', 'close', 'danger');
+      else notify('Ocorreu um erro ao atualizar o anúncio', 'Erro', 'close', 'danger');
       console.error(error);
     } finally {
       setIsSaving(false);
@@ -95,7 +115,10 @@ const CreateAdvertisement: React.FC = () => {
       } else if (photoIndex !== -1) {
         setIsRemovingPhotoUrls((prev) => [...prev, response]);
 
-        formik.setFieldValue('photos', values.photos.filter((photo) => photo.photo_url !== response));
+        formik.setFieldValue(
+          'photos',
+          values.photos.filter((photo) => photo.photo_url !== response)
+        );
         setIsRemovingPhotoUrls((prev) => prev.filter((key) => key !== response));
       }
     } catch (error) {
@@ -111,10 +134,18 @@ const CreateAdvertisement: React.FC = () => {
 
       if (file) {
         file.remove();
+        if (videoIndex <= 1)
+          setFieldValue(
+            'videos',
+            values.videos.filter((video) => video.video_url !== response)
+          );
       } else if (videoIndex !== -1) {
         setIsRemovingVideoUrls((prev) => [...prev, response]);
 
-        formik.setFieldValue('videos', values.videos.filter((video) => video.video_url !== response));
+        formik.setFieldValue(
+          'videos',
+          values.videos.filter((video) => video.video_url !== response)
+        );
         setIsRemovingVideoUrls((prev) => prev.filter((key) => key !== response));
       }
     } catch (error) {
@@ -167,7 +198,22 @@ const CreateAdvertisement: React.FC = () => {
 
   const formik = useFormik<AdvertisementFormValues>({ initialValues, validationSchema, onSubmit });
 
-  const { values, touched, errors, handleSubmit, handleChange, handleBlur, setFieldValue } = formik;
+  const { values, touched, errors, handleSubmit, handleChange, handleBlur, setFieldValue, setValues } = formik;
+
+  const advertisementResult = useQuery({ queryKey: ['advertisement', id], queryFn: getAdvertisement_ });
+
+  useEffect(() => {
+    if (advertisementResult.data) {
+      setValues(advertisementResult.data);
+    }
+  }, [advertisementResult.data]);
+
+  if (advertisementResult.isLoading)
+    return (
+      <div className="d-flex justify-content-center align-items-center sh-50">
+        <StaticLoading />
+      </div>
+    );
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -243,20 +289,6 @@ const CreateAdvertisement: React.FC = () => {
                       isInvalid={!!errors.availability && touched.availability}
                     />
                     <Form.Control.Feedback type="invalid">{errors.availability}</Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-                <Col md="4">
-                  <Form.Group className="form-group position-relative tooltip-end-top">
-                    <Form.Label className="fw-bold">Valor R$ (A combinar, deixe 0)</Form.Label>
-                    <Form.Control
-                      type="string"
-                      name="price"
-                      onChange={(e) => setFieldValue('price', formatCurrency(e.target.value))}
-                      value={values.price}
-                      isInvalid={!!errors.price && touched.price}
-                      className={!!errors.price ? 'is-invalid' : ''}
-                    />
-                    <Form.Control.Feedback type="invalid">{errors.price}</Form.Control.Feedback>
                   </Form.Group>
                 </Col>
                 <Col md="4">
@@ -640,12 +672,12 @@ const validationSchema = Yup.object().shape({
   title: Yup.string().required('Título é obrigatório'),
   description: Yup.string().required('Descrição é obrigatória'),
   availability: Yup.string().required('Disponibilidade é obrigatória'),
-  price: Yup.string()
-    .test('is-positive', 'O valor deve ser maior que zero!', function (value) {
-      const numValue = parseBrValueToNumber(value || '');
-      return numValue > 0;
-    })
-    .required('O valor é obrigatório'),
+  // price: Yup.string()
+  //   .test('is-positive', 'O valor deve ser maior que zero!', function (value) {
+  //     const numValue = parseBrValueToNumber(value || '');
+  //     return numValue > 0;
+  //   })
+  //   .required('O valor é obrigatório'),
   age: Yup.number().required('Idade é obrigatória').integer('A idade deve ser um número inteiro').positive('A idade deve ser positiva'),
   locations: Yup.array().min(1, 'Selecione pelo menos uma localização').required('Localização é obrigatória'),
   categories: Yup.array().min(1, 'Selecione pelo menos uma categoria').required('Categorias são obrigatórias'),
@@ -653,4 +685,4 @@ const validationSchema = Yup.object().shape({
   photos: Yup.array().min(1, 'Fotos são obrigatórias'),
 });
 
-export default CreateAdvertisement;
+export default EditAdvertisement;

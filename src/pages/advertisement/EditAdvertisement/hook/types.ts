@@ -1,6 +1,8 @@
 export type AdvertisementStore = {
-  createAdvertisement: (values: AdvertisementFormValues) => Promise<void>;
   getAdvertisements: () => Promise<Advertisement[]>;
+  getAdvertisement: (id: string) => Promise<Advertisement>;
+  updateAdvertisement: (id: string, values: AdvertisementFormValues) => Promise<void>;
+  createAdvertisement: (values: AdvertisementFormValues) => Promise<void>;
 }
 
 export interface Advertisement {
@@ -17,25 +19,6 @@ export interface Advertisement {
   locations: string[];
   categories: string[];
   public: string[];
-  photos: AdvertisementPhotosFormValues[];
-  videos: AdvertisementVideosFormValues[];
-}
-
-export interface AdvertisementFormValues {
-  advertiser_id: string;
-  name: string;
-  state: string;
-  city: string;
-  title: string;
-  description: string;
-  availability: string;
-  price: number;
-  age: number;
-  locations: string[];
-  categories: string[];
-  public: string[];
-  photos: AdvertisementPhotosFormValues[];
-  videos: AdvertisementVideosFormValues[];
   physical_characteristics: {
     [key: string]: string[];
   };
@@ -54,6 +37,45 @@ export interface AdvertisementFormValues {
   payment_methods: {
     [key: string]: boolean;
   };
+
+  photos: AdvertisementPhotosFormValues[];
+  videos: AdvertisementVideosFormValues[];
+}
+
+export interface AdvertisementFormValues {
+  advertiser_id: string;
+  name: string;
+  state: string;
+  city: string;
+  title: string;
+  description: string;
+  availability: string;
+  price: number;
+  age: number;
+  locations: string[];
+  categories: string[];
+  public: string[];
+  physical_characteristics: {
+    [key: string]: string[];
+  };
+  services_offered_and_not_offered: {
+    [key: string]: string[];
+  };
+  working_hours: {
+    [key: string]: {
+      inicio: string;
+      fim: string;
+    };
+  };
+  values: {
+    [key: string]: string;
+  };
+  payment_methods: {
+    [key: string]: boolean;
+  };
+
+  photos: AdvertisementPhotosFormValues[];
+  videos: AdvertisementVideosFormValues[];
 }
 
 export interface AdvertisementPhotosFormValues {
