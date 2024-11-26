@@ -2,12 +2,15 @@ import { Badge, Button, Card, Col, Row } from 'react-bootstrap';
 import CsLineIcons from '../../cs-line-icons/CsLineIcons';
 import { Link } from 'react-router-dom';
 import { appRoot } from '@/routes';
-import { useAdvertisement } from '../advertisement/CreateAdvertisement/hook';
+import { useAdvertisement } from '../advertisement/hook';
 import { useQuery } from '@tanstack/react-query';
 import StaticLoading from '@/components/loading/StaticLoading';
+import { useDeleteAdvertisementConfirmationModalStore } from './hooks/modals/DeleteAdvertisementConfirmationModalStore';
+import DeleteAdvertisementConfirmationModal from './modals/DeleteAdvertisementConfirmationModal';
 
 const AdvertisementList = () => {
   const { getAdvertisements } = useAdvertisement();
+  const { handleSelectAdvertisementToRemove } = useDeleteAdvertisementConfirmationModalStore();
 
   const getAdvertisements_ = async () => {
     try {
@@ -59,7 +62,7 @@ const AdvertisementList = () => {
                         <Link to={`${appRoot}/advertisement/edit/${advertisement.advertisement_id}`} className="btn btn-outline-secondary btn-sm ms-1">
                           Editar
                         </Link>
-                        <Button variant="outline-secondary" size="sm" className="btn-icon btn-icon-only ms-1">
+                        <Button variant="outline-secondary" size="sm" className="btn-icon btn-icon-only ms-1" onClick={() => handleSelectAdvertisementToRemove(advertisement)}>
                           <CsLineIcons icon="bin" />
                         </Button>
                       </div>
@@ -76,6 +79,8 @@ const AdvertisementList = () => {
           </div>
         </Card.Body>
       </Card>
+
+      <DeleteAdvertisementConfirmationModal />
     </Col>
   );
 };

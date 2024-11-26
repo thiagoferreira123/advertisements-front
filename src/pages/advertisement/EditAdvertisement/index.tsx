@@ -9,22 +9,21 @@ import InputMask from 'react-input-mask';
 import CsLineIcons from '@/cs-line-icons/CsLineIcons';
 import MultipleDropzoneComponent from '@/components/MultipleDropzoneComponent';
 import AsyncButton from '@/components/AsyncButton';
-import { useAdvertisement } from './hook';
 import { notify } from '@/components/toast/NotificationIcon';
 import { AxiosError } from 'axios';
-import { AdvertisementFormValues, AdvertisementPhotosFormValues, AdvertisementVideosFormValues } from './hook/types';
 import BasicSelect from '@/components/BasicSelect';
-import { cities, states } from './constants/cities_and_states';
 import { formatCurrency } from '@/helpers/GenericScripts';
-import { parseBrValueToNumber } from '@/helpers/StringHelpers';
-import { physical_characteristics } from './constants/physical_characteristics';
-import { services_offered_and_not_offered } from './constants/services_offered_and_not_offered';
-import { working_hours } from './constants/working_hours';
-import { valueFieldOptions } from './constants/values';
-import { payment_methods } from './constants/payment_methods';
 import { useParams } from 'react-router-dom';
 import { AppException } from '@/helpers/ErrorHelpers';
 import StaticLoading from '@/components/loading/StaticLoading';
+import { cities, states } from '../CreateAdvertisement/constants/cities_and_states';
+import { physical_characteristics } from '../CreateAdvertisement/constants/physical_characteristics';
+import { payment_methods } from '../CreateAdvertisement/constants/payment_methods';
+import { services_offered_and_not_offered } from '../CreateAdvertisement/constants/services_offered_and_not_offered';
+import { valueFieldOptions } from '../CreateAdvertisement/constants/values';
+import { working_hours } from '../CreateAdvertisement/constants/working_hours';
+import { AdvertisementFormValues, AdvertisementPhotosFormValues, AdvertisementVideosFormValues } from '../hook/types';
+import { useAdvertisement } from '../hook';
 
 const EditAdvertisement: React.FC = () => {
   const { id } = useParams();
@@ -395,32 +394,17 @@ const EditAdvertisement: React.FC = () => {
           <Card className="mb-3">
             <Card.Body>
               <h5 className="fw-bold">Serviços oferecidos e não oferecidos</h5>
-              {Object.entries(services_offered_and_not_offered).map(([characteristicName, options]) => (
-                <Form.Group key={characteristicName}>
-                  <Form.Label className="fw-bold">{characteristicName}</Form.Label>
-                  {options.map((option) => (
-                    <Form.Check
-                      key={option}
-                      label={option}
-                      value={option}
-                      checked={values.services_offered_and_not_offered[characteristicName]?.includes(option) || false}
-                      onChange={() => {
-                        const selectedOptions = values.services_offered_and_not_offered[characteristicName] || [];
-                        if (selectedOptions.includes(option)) {
-                          setFieldValue(
-                            `services_offered_and_not_offered.${characteristicName}`,
-                            selectedOptions.filter((item) => item !== option)
-                          );
-                        } else {
-                          setFieldValue(`services_offered_and_not_offered.${characteristicName}`, [...selectedOptions, option]);
-                        }
-                      }}
-                      className={errors.services_offered_and_not_offered && errors.services_offered_and_not_offered[characteristicName] ? 'is-invalid' : ''}
-                    />
-                  ))}
-                  <Form.Control.Feedback type="invalid">
-                    {errors.services_offered_and_not_offered && errors.services_offered_and_not_offered[characteristicName]}
-                  </Form.Control.Feedback>
+              {Object.entries(values.services_offered_and_not_offered).map(([key, service]) => (
+                <Form.Group key={key}>
+                  <Form.Check
+                    type="checkbox"
+                    label={service.service}
+                    checked={service.offered === 'Yes'}
+                    onChange={(e) => {
+                      // Atualizamos apenas o campo `offered` do serviço correspondente
+                      setFieldValue(`services_offered_and_not_offered.${key}.offered`, e.target.checked ? 'Yes' : '');
+                    }}
+                  />
                 </Form.Group>
               ))}
             </Card.Body>
@@ -660,7 +644,10 @@ const initialValues: AdvertisementFormValues = {
   photos: [],
   videos: [],
   physical_characteristics: {},
-  services_offered_and_not_offered: {},
+  services_offered_and_not_offered: services_offered_and_not_offered.reduce((acc, service) => {
+    acc[service.service] = service;
+    return acc;
+  }, {} as { [key: string]: { service: string; offered: string; description: string } }),
   working_hours: {},
   values: {},
   payment_methods: {},

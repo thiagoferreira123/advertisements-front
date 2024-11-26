@@ -1,8 +1,14 @@
+import { QueryClient } from "@tanstack/react-query";
+
 export type AdvertisementStore = {
   getAdvertisements: () => Promise<Advertisement[]>;
   getAdvertisement: (id: string) => Promise<Advertisement>;
+
   updateAdvertisement: (id: string, values: AdvertisementFormValues) => Promise<void>;
+
   createAdvertisement: (values: AdvertisementFormValues) => Promise<void>;
+
+  deleteAdvertisement: (id: string, queryClient: QueryClient) => Promise<void>;
 }
 
 export interface Advertisement {
@@ -23,7 +29,12 @@ export interface Advertisement {
     [key: string]: string[];
   };
   services_offered_and_not_offered: {
-    [key: string]: string[];
+    [key: string]: {
+        service: string;
+        offered: string;
+        description: string;
+      
+    };
   };
   working_hours: {
     [key: string]: {
@@ -37,7 +48,6 @@ export interface Advertisement {
   payment_methods: {
     [key: string]: boolean;
   };
-
   photos: AdvertisementPhotosFormValues[];
   videos: AdvertisementVideosFormValues[];
 }
@@ -59,7 +69,12 @@ export interface AdvertisementFormValues {
     [key: string]: string[];
   };
   services_offered_and_not_offered: {
-    [key: string]: string[];
+    [key: string]: {
+        service: string;
+        offered: string;
+        description: string;
+      
+    };
   };
   working_hours: {
     [key: string]: {
@@ -73,7 +88,6 @@ export interface AdvertisementFormValues {
   payment_methods: {
     [key: string]: boolean;
   };
-
   photos: AdvertisementPhotosFormValues[];
   videos: AdvertisementVideosFormValues[];
 }
