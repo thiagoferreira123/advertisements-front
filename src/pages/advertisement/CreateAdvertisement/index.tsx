@@ -5,6 +5,9 @@ import * as Yup from 'yup';
 import { useQueryClient } from '@tanstack/react-query';
 import { IFileWithMeta } from 'react-dropzone-uploader';
 import InputMask from 'react-input-mask';
+import { useReactMediaRecorder } from 'react-media-recorder';
+import AudioPlayer from 'react-h5-audio-player';
+import 'react-h5-audio-player/lib/styles.css';
 
 import CsLineIcons from '@/cs-line-icons/CsLineIcons';
 import MultipleDropzoneComponent from '@/components/MultipleDropzoneComponent';
@@ -28,17 +31,47 @@ import { services_offered_and_not_offered } from './constants/services_offered_a
 import { working_hours } from './constants/working_hours';
 import { valueFieldOptions } from './constants/values';
 import { payment_methods } from './constants/payment_methods';
+import api from '@/services/useAxios';
 
 const CreateAdvertisement: React.FC = () => {
   const queryClient = useQueryClient();
 
   const [isSaving, setIsSaving] = useState(false);
+  const [isSendingAudio, setIsSendingAudio] = useState(false);
+  const [isRecordingAudio, setIsRecordingAudio] = useState(false);
   const [imageFiles, setImageFiles] = useState<IFileWithMeta[]>([]);
   const [videoFiles, setVideoFiles] = useState<IFileWithMeta[]>([]);
   const [isRemovingPhotoUrls, setIsRemovingPhotoUrls] = useState<string[]>([]);
   const [isRemovingVideoUrls, setIsRemovingVideoUrls] = useState<string[]>([]);
-
+  const [isRemovingAudioUrls, setIsRemovingAudioUrls] = useState<string[]>([]);
   const { createAdvertisement } = useAdvertisement();
+
+  const { status, startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({
+    audio: true,
+    onStop: async (blobUrl, blob) => {
+      try {
+        setIsSendingAudio(true);
+
+        const file = new File([blob], 'file.' + blob.type.split('/')[1], { type: blob.type });
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const { data } = await api.post<{ url: string }>('audio/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        setFieldValue('audio_url', data.url);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsSendingAudio(false);
+        setIsRecordingAudio(false);
+      }
+    },
+  });
 
   const onSubmit = async (values: AdvertisementFormValues) => {
     try {
@@ -172,9 +205,37 @@ const CreateAdvertisement: React.FC = () => {
           ? (values[field as keyof AdvertisementFormValues] as string[]).filter((v) => v !== value)
           : [...(values[field as keyof AdvertisementFormValues] as string[]), value]
         : values[field as keyof AdvertisementFormValues] === value
-          ? ''
-          : value
+        ? ''
+        : value
     );
+  };
+
+  const handleToggleRecording = async () => {
+    if (status === 'recording') {
+      stopRecording();
+      setIsRecordingAudio(false);
+    } else {
+      startRecording();
+      setIsRecordingAudio(true);
+    }
+  };
+
+  const handleClickRemoveAudio = async (audioUrl: string) => {
+    try {
+      setIsRemovingAudioUrls((prev) => [...prev, audioUrl]);
+
+      await api.delete('audio', {
+        data: {
+          url: audioUrl,
+        },
+      });
+
+      setFieldValue('audio_url', '');
+    } catch (error) {
+      console.error('Error removing audio:', error);
+    } finally {
+      setIsRemovingAudioUrls((prev) => prev.filter((key) => key !== audioUrl));
+    }
   };
 
   const formik = useFormik<AdvertisementFormValues>({ initialValues, validationSchema, onSubmit });
@@ -188,7 +249,6 @@ const CreateAdvertisement: React.FC = () => {
           <Card className="mb-3">
             <Card.Body>
               <Row className="mb-3 g-3">
-
                 {/* Título */}
                 <Col md="12">
                   <Form.Group className="form-group position-relative tooltip-end-top">
@@ -214,7 +274,6 @@ const CreateAdvertisement: React.FC = () => {
                     <Form.Control.Feedback type="invalid">{errors.cycle}</Form.Control.Feedback>
                   </Form.Group>
                 </Col>
-
 
                 {/* Descrição */}
                 <Col md="12">
@@ -366,9 +425,7 @@ const CreateAdvertisement: React.FC = () => {
                         </Button>
                       ))}
                     </div>
-                    {errors.locations && touched.locations && (
-                      <div className="text-danger">{errors.locations}</div>
-                    )}
+                    {errors.locations && touched.locations && <div className="text-danger">{errors.locations}</div>}
                   </Form.Group>
                 </Col>
                 <Col md="12">
@@ -386,9 +443,7 @@ const CreateAdvertisement: React.FC = () => {
                         </Button>
                       ))}
                     </div>
-                    {errors.categories && touched.categories && (
-                      <div className="text-danger">{errors.categories}</div>
-                    )}
+                    {errors.categories && touched.categories && <div className="text-danger">{errors.categories}</div>}
                   </Form.Group>
                 </Col>
                 <Col md="12">
@@ -406,9 +461,7 @@ const CreateAdvertisement: React.FC = () => {
                         </Button>
                       ))}
                     </div>
-                    {errors.public && touched.public && (
-                      <div className="text-danger">{errors.public}</div>
-                    )}
+                    {errors.public && touched.public && <div className="text-danger">{errors.public}</div>}
                   </Form.Group>
                 </Col>
               </Row>
@@ -528,6 +581,63 @@ const CreateAdvertisement: React.FC = () => {
                     )}
                   </Row>
                 </Col>
+
+                {/* Audio */}
+                <Col md="12">
+                  <h5 className="fw-bold text-alternate">Audio</h5>
+                  {!values.audio_url ? (
+                    <>
+                      <AsyncButton
+                        isSaving={isSendingAudio}
+                        loadingText=" "
+                        variant={isRecordingAudio ? 'primary' : 'outline-primary'}
+                        className={`btn-icon btn-icon-only mb-1 rounded-xl ms-1 ${isRecordingAudio ? 'pulse-button' : null}`}
+                        onClickHandler={handleToggleRecording}
+                        type="button"
+                      >
+                        <CsLineIcons icon="mic" />
+                      </AsyncButton>
+                      <Form.Control.Feedback type="invalid" className="d-block">
+                        {getIn(errors, 'videos')}
+                      </Form.Control.Feedback>
+                    </>
+                  ) : (
+                    <Row className="mt-3">
+                      <Col md="4" className="mb-3">
+                        <Card className="border">
+                          <AudioPlayer
+                            src={values.audio_url}
+                            customAdditionalControls={[]}
+                            customVolumeControls={[]}
+                            showJumpControls={false}
+                            autoPlayAfterSrcChange={false}
+                          />
+                          <Card.Body className="d-flex justify-content-between align-items-center p-2">
+                            <div>
+                              <a
+                                href={values.audio_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-outline-primary btn-icon btn-icon-only me-2"
+                              >
+                                <CsLineIcons icon="eye" />
+                              </a>
+                              <AsyncButton
+                                loadingText=" "
+                                isSaving={isRemovingAudioUrls.includes(values.audio_url)}
+                                variant="outline-primary"
+                                onClickHandler={() => handleClickRemoveAudio(values.audio_url)}
+                                className="btn-icon btn-icon-only"
+                              >
+                                <CsLineIcons icon="bin" />
+                              </AsyncButton>
+                            </div>
+                          </Card.Body>
+                        </Card>
+                      </Col>
+                    </Row>
+                  )}
+                </Col>
               </Row>
             </Card.Body>
           </Card>
@@ -569,57 +679,42 @@ const CreateAdvertisement: React.FC = () => {
           <Card className="mb-3">
             <Card.Body>
               <h5 className="fw-bold text-alternate">Características físicas</h5>
-              {Object.entries(physical_characteristics).map(
-                ([characteristicName, options]) => (
-                  <Form.Group key={characteristicName}>
-                    <Form.Label className="fw-bold text-alternate">{characteristicName}</Form.Label>
-                    <div>
-                      {options.map((option) => {
-                        const isSelected = values.physical_characteristics[
-                          characteristicName
-                        ]?.includes(option);
-                        return (
-                          <Button
-                            key={option}
-                            variant={isSelected ? "primary" : "outline-primary"}
-                            onClick={() => {
-                              const selectedOptions =
-                                values.physical_characteristics[characteristicName] || [];
-                              if (selectedOptions.includes(option)) {
-                                setFieldValue(
-                                  `physical_characteristics.${characteristicName}`,
-                                  selectedOptions.filter((item) => item !== option)
-                                );
-                              } else {
-                                setFieldValue(
-                                  `physical_characteristics.${characteristicName}`,
-                                  [...selectedOptions, option]
-                                );
-                              }
-                            }}
-                            className={
-                              errors.physical_characteristics &&
-                                errors.physical_characteristics[characteristicName]
-                                ? "is-invalid"
-                                : ""
+              {Object.entries(physical_characteristics).map(([characteristicName, options]) => (
+                <Form.Group key={characteristicName}>
+                  <Form.Label className="fw-bold text-alternate">{characteristicName}</Form.Label>
+                  <div>
+                    {options.map((option) => {
+                      const isSelected = values.physical_characteristics[characteristicName]?.includes(option);
+                      return (
+                        <Button
+                          key={option}
+                          variant={isSelected ? 'primary' : 'outline-primary'}
+                          onClick={() => {
+                            const selectedOptions = values.physical_characteristics[characteristicName] || [];
+                            if (selectedOptions.includes(option)) {
+                              setFieldValue(
+                                `physical_characteristics.${characteristicName}`,
+                                selectedOptions.filter((item) => item !== option)
+                              );
+                            } else {
+                              setFieldValue(`physical_characteristics.${characteristicName}`, [...selectedOptions, option]);
                             }
-                            style={{ margin: "0 5px 5px 0" }}
-                          >
-                            {option}
-                          </Button>
-                        );
-                      })}
-                    </div>
-                    <Form.Control.Feedback type="invalid">
-                      {errors.physical_characteristics &&
-                        errors.physical_characteristics[characteristicName]}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                )
-              )}
+                          }}
+                          className={errors.physical_characteristics && errors.physical_characteristics[characteristicName] ? 'is-invalid' : ''}
+                          style={{ margin: '0 5px 5px 0' }}
+                        >
+                          {option}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                  <Form.Control.Feedback type="invalid">
+                    {errors.physical_characteristics && errors.physical_characteristics[characteristicName]}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              ))}
             </Card.Body>
           </Card>
-
 
           {/* Serviços oferecidos e não oferecidos */}
           {/* <Card className="mb-3">
@@ -644,29 +739,22 @@ const CreateAdvertisement: React.FC = () => {
             <Card.Body>
               <h5 className="fw-bold text-alternate">Serviços oferecidos</h5>
               <div className="d-flex flex-wrap">
-                {Object.entries(values.services_offered_and_not_offered).map(
-                  ([key, service]) => (
-                    <Button
-                      key={key}
-                      variant={service.offered === "Yes" ? "primary" : "outline-primary"}
-                      onClick={() => {
-                        // Atualizamos apenas o campo `offered` do serviço correspondente
-                        setFieldValue(
-                          `services_offered_and_not_offered.${key}.offered`,
-                          service.offered === "Yes" ? "" : "Yes"
-                        );
-                      }}
-                      className="me-2 mb-2" // Adiciona espaçamento entre botões
-                    >
-                      {service.service}
-                    </Button>
-                  )
-                )}
+                {Object.entries(values.services_offered_and_not_offered).map(([key, service]) => (
+                  <Button
+                    key={key}
+                    variant={service.offered === 'Yes' ? 'primary' : 'outline-primary'}
+                    onClick={() => {
+                      // Atualizamos apenas o campo `offered` do serviço correspondente
+                      setFieldValue(`services_offered_and_not_offered.${key}.offered`, service.offered === 'Yes' ? '' : 'Yes');
+                    }}
+                    className="me-2 mb-2" // Adiciona espaçamento entre botões
+                  >
+                    {service.service}
+                  </Button>
+                ))}
               </div>
             </Card.Body>
           </Card>
-
-
 
           {/* Horários de expediente */}
           <Card className="mb-3">
@@ -677,7 +765,7 @@ const CreateAdvertisement: React.FC = () => {
                   <Form.Label className="fw-bold text-alternate">{day}</Form.Label>
                   <div className="d-flex">
                     <div className="me-2 mt-3 mb-3">
-                      <Form.Label className='text-alternate'>Início</Form.Label>
+                      <Form.Label className="text-alternate">Início</Form.Label>
                       <InputMask
                         mask="99:99"
                         placeholder="00:00"
@@ -689,8 +777,8 @@ const CreateAdvertisement: React.FC = () => {
                         className="form-control"
                       />
                     </div>
-                    <div className='mt-3'>
-                      <Form.Label className='text-alternate'>Fim</Form.Label>
+                    <div className="mt-3">
+                      <Form.Label className="text-alternate">Fim</Form.Label>
                       <InputMask
                         mask="99:99"
                         placeholder="00:00"
@@ -713,7 +801,6 @@ const CreateAdvertisement: React.FC = () => {
           {/* Valores */}
           <Card className="mb-3">
             <Card.Body>
-
               <div className="mb-3">
                 <h5 className="fw-bold text-alternate">Valores</h5>
                 <div className="d-flex flex-wrap align-items-center">
@@ -726,27 +813,20 @@ const CreateAdvertisement: React.FC = () => {
                           placeholder={value}
                           value={getIn(values, `values.${key}`)}
                           onChange={(e) => {
-                            setFieldValue(
-                              `values.${key}`,
-                              formatCurrency(e.target.value)
-                            );
+                            setFieldValue(`values.${key}`, formatCurrency(e.target.value));
                           }}
                           onBlur={handleBlur}
                           className="form-control"
                         />
                         {/* Exemplo de exibição de erros */}
-                        {errors.values &&
-                          errors.values[key] &&
-                          touched.values &&
-                          touched.values[key] && (
-                            <div className="text-danger">{errors.values[key]}</div>
-                          )}
+                        {errors.values && errors.values[key] && touched.values && touched.values[key] && (
+                          <div className="text-danger">{errors.values[key]}</div>
+                        )}
                       </Form.Group>
                     </div>
                   ))}
                 </div>
               </div>
-
 
               <div>
                 <h5 className="fw-bold text-alternate">Formas de pagamento</h5>
@@ -754,26 +834,22 @@ const CreateAdvertisement: React.FC = () => {
                   {payment_methods.map((option) => (
                     <Button
                       key={option}
-                      variant={values.payment_methods[option] ? "primary" : "outline-primary"}
+                      variant={values.payment_methods[option] ? 'primary' : 'outline-primary'}
                       onClick={() => {
                         const selectedOptions = values.payment_methods || {};
-                        setFieldValue(
-                          `payment_methods.${option}`,
-                          !selectedOptions[option]
-                        );
+                        setFieldValue(`payment_methods.${option}`, !selectedOptions[option]);
                       }}
-                      className={errors.payment_methods ? "is-invalid mb-2" : "mb-2"}
-                      style={{ marginRight: "5px" }}
+                      className={errors.payment_methods ? 'is-invalid mb-2' : 'mb-2'}
+                      style={{ marginRight: '5px' }}
                     >
                       {option}
                     </Button>
                   ))}
                 </div>
-                {errors.payment_methods && (
-                  <div className="invalid-feedback d-block">{errors.payment_methods}</div>
+                {errors.payment_methods && Object.keys(errors.payment_methods).length > 0 && (
+                  <div className="invalid-feedback d-block">{errors.payment_methods[Object.keys(errors.payment_methods)[0]]}</div>
                 )}
               </div>
-
             </Card.Body>
           </Card>
 
@@ -802,8 +878,6 @@ const initialValues: AdvertisementFormValues = {
   locations: [],
   categories: [],
   public: [],
-  photos: [],
-  videos: [],
   physical_characteristics: {},
   services_offered_and_not_offered: services_offered_and_not_offered.reduce((acc, service) => {
     acc[service.service] = service;
@@ -812,6 +886,10 @@ const initialValues: AdvertisementFormValues = {
   working_hours: {},
   values: {},
   payment_methods: {},
+
+  photos: [],
+  videos: [],
+  audio_url: '',
 };
 
 const validationSchema = Yup.object().shape({
@@ -819,14 +897,8 @@ const validationSchema = Yup.object().shape({
   city: Yup.string().required('Cidade é obrigatória'),
   title: Yup.string().required('Título é obrigatório'),
   description: Yup.string().required('Descrição é obrigatória'),
-  availability: Yup.string().required('Disponibilidade é obrigatória'),
-  price: Yup.string()
-    .test('is-positive', 'O valor deve ser maior que zero!', function (value) {
-      const numValue = parseBrValueToNumber(value || '');
-      return numValue > 0;
-    })
-    .required('O valor é obrigatório'),
-  age: Yup.number().required('Idade é obrigatória').integer('A idade deve ser um número inteiro').positive('A idade deve ser positiva'),
+  // availability: Yup.string().required('Disponibilidade é obrigatória'),
+  // age: Yup.number().required('Idade é obrigatória').integer('A idade deve ser um número inteiro').positive('A idade deve ser positiva'),
   locations: Yup.array().min(1, 'Selecione pelo menos uma localização').required('Localização é obrigatória'),
   categories: Yup.array().min(1, 'Selecione pelo menos uma categoria').required('Categorias são obrigatórias'),
   public: Yup.array().min(1, 'Selecione pelo menos um público').required('Público é obrigatório'),

@@ -50,10 +50,12 @@ export interface Advertisement {
   payment_methods: {
     [key: string]: boolean;
   };
-  photos: AdvertisementPhotosFormValues[];
-  videos: AdvertisementVideosFormValues[];
   payments: Payment[];
   date_of_creation: string;
+
+  photos: AdvertisementPhotosFormValues[];
+  videos: AdvertisementVideosFormValues[];
+  audio_url: string;
 }
 
 export interface Payment {
@@ -101,6 +103,7 @@ export interface AdvertisementFormValues {
   };
   photos: AdvertisementPhotosFormValues[];
   videos: AdvertisementVideosFormValues[];
+  audio_url: string;
 }
 
 export interface AdvertisementPhotosFormValues {
