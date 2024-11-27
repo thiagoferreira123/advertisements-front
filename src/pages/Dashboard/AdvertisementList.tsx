@@ -63,15 +63,12 @@ const AdvertisementList = () => {
                   <Col>
                     <div className="d-flex flex-row pt-0 pb-0 ps-3 pe-0 h-100 align-items-center justify-content-between">
                       <div className="d-flex flex-column">
-                        <div className="fw-bold">{advertisement.title}</div>
+                        <h5 className="fw-bold mb-0 text-alternative">{advertisement.title} | <Badge className="me-1">{AdvertisementSubscriptionCycleLabels[advertisement.cycle]}</Badge></h5>
                         <div>
                           {' '}
                           <div>
                             <div>
-                              <Badge className="me-1">Duração do anúncio: {AdvertisementSubscriptionCycleLabels[advertisement.cycle]}</Badge>
-                            </div>
-                            <div>
-                              <Badge className="me-1">Data da criação: {convertIsoDateStringToBrDateString(advertisement.date_of_creation)}</Badge>
+                              <small className="me-1 mb-0">Data da criação: {convertIsoDateStringToBrDateString(advertisement.date_of_creation)}</small>
                             </div>
                             <div>
                               {!advertisement.payments.filter((payment) => payment.status === 'CONFIRMED').length ? (
