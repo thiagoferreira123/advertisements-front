@@ -103,7 +103,17 @@ const ResetPassword = () => {
           <form id="resetForm" className="tooltip-end-bottom" onSubmit={handleSubmit}>
             <div className="mb-3 filled">
               <CsLineIcons icon="key" />
-              <Form.Control type="text" name="token" onChange={handleChange} value={values.token} placeholder="Insira o token de 5 números" />
+              <Form.Control 
+                type="text" 
+                name="token" 
+                onChange={handleChange} 
+                value={values.token} 
+                placeholder="Insira o token de 5 números"
+                autoComplete="one-time-code"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={5}
+              />
               {errors.token && touched.token && <div className="d-block invalid-tooltip">{errors.token}</div>}
             </div>
 

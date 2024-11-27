@@ -12,6 +12,7 @@ import { notify } from '@/components/toast/NotificationIcon';
 import { useAuth } from '../Auth/Login/hook';
 import { useUploadCoverPhotoModalStore } from './hooks/modals/UploadCoverPhotoModalStore';
 import UploadCoverPhotoModal from './modals/UploadCoverPhotoModal';
+import StaticLoading from '@/components/loading/StaticLoading';
 
 const ProfilePhoto = () => {
   const [isCreating, setIsCreating] = useState(false);
@@ -69,14 +70,28 @@ const ProfilePhoto = () => {
           <form onSubmit={handleSubmit} className="sw-16">
             {/* Profile Photo */}
             {!values.profile_photo ? (
-              <DropzoneComponent
-                name="profile_photo"
-                endpoint="/advertiser/profile-photo"
-                onChange={(name, value) => {
-                  setFieldValue(name, value);
-                  onSubmit({ profile_photo: value });
+              <div
+                style={{
+                  width: '150px',
+                  height: '150px',
+                  objectFit: 'cover',
+                  position: 'absolute',
+                  bottom: '-4px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  display: 'flex',
                 }}
-              />
+              >
+                <DropzoneComponent
+                  name="profile_photo"
+                  endpoint="/advertiser/profile-photo"
+                  onChange={(name, value) => {
+                    setFieldValue(name, value);
+                    onSubmit({ profile_photo: value });
+                  }}
+                  previewComponent={DropzonePreview}
+                />
+              </div>
             ) : (
               <div className="position-relative">
                 {/* Profile Image */}
@@ -118,8 +133,14 @@ const ProfilePhoto = () => {
               <div className="d-block invalid-tooltip">{getIn(errors, 'profile_photo')}</div>
             )}
           </form>
-          <Button type="button" size="sm" variant="primary" className="position-absolute end-0 bottom-0 m-2 mb-3 me-3 btn-icon btn-icon-only" onClick={showUploadCoverPhotoModal}>
-          <CsLineIcons icon="edit" />
+          <Button
+            type="button"
+            size="sm"
+            variant="primary"
+            className="position-absolute end-0 bottom-0 m-2 mb-3 me-3 btn-icon btn-icon-only"
+            onClick={showUploadCoverPhotoModal}
+          >
+            <CsLineIcons icon="edit" />
           </Button>
         </Card.Body>
       </Card>
@@ -127,6 +148,10 @@ const ProfilePhoto = () => {
       <UploadCoverPhotoModal />
     </Col>
   );
+};
+
+const DropzonePreview = ({ meta, fileWithMeta }: { meta: any, fileWithMeta: any }) => {
+  return <div className="h-100 w-100 d-flex justify-content-center align-items-center pb-4"><StaticLoading /></div>;
 };
 
 const initialValues: ProfilePhotoFormikValues = {

@@ -2,17 +2,21 @@ import DropzonePreview from '@/components/dropzone/DropzonePreview';
 import { notify } from '@/components/toast/NotificationIcon';
 import api, { apiUrl } from '@/services/useAxios';
 import { useRef } from 'react';
-import Dropzone, { defaultClassNames, IFileWithMeta, StatusValue } from 'react-dropzone-uploader';
+import Dropzone, { defaultClassNames, IFileWithMeta, IPreviewProps, StatusValue } from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 
 interface DropzoneComponentProps {
   name: string;
   endpoint: string;
   placeholder?: string;
+  previewComponent?: ({ meta, fileWithMeta }: {
+    meta: any;
+    fileWithMeta: any;
+}) => JSX.Element;
   onChange: (_name: string, _value: string) => void;
 }
 
-const DropzoneComponent = ({name, endpoint, placeholder, onChange}: DropzoneComponentProps) => {
+const DropzoneComponent = ({name, endpoint, placeholder, previewComponent, onChange}: DropzoneComponentProps) => {
   const uploaderRef = useRef(null);
 
   const handleChangeStatus = (file: IFileWithMeta, status: StatusValue) => {
@@ -58,7 +62,7 @@ const DropzoneComponent = ({name, endpoint, placeholder, onChange}: DropzoneComp
       ref={uploaderRef}
       submitButtonContent={null}
       onChangeStatus={handleChangeStatus}
-      PreviewComponent={DropzonePreview}
+      PreviewComponent={previewComponent ? previewComponent : DropzonePreview}
       getUploadParams={getUploadParams}
       submitButtonDisabled
       maxFiles={1}
