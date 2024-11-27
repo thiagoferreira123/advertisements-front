@@ -8,7 +8,7 @@ import StaticLoading from '@/components/loading/StaticLoading';
 import { useDeleteAdvertisementConfirmationModalStore } from './hooks/modals/DeleteAdvertisementConfirmationModalStore';
 import DeleteAdvertisementConfirmationModal from './modals/DeleteAdvertisementConfirmationModal';
 import { AdvertisementSubscriptionCycleLabels } from '../advertisement/hook/types';
-import { convertIsoDateStringToBrDateString, parseIsoToDate } from '@/helpers/DateHelper';
+import { convertIsoDateStringToBrDateString } from '@/helpers/DateHelper';
 
 const AdvertisementList = () => {
   const { getAdvertisements } = useAdvertisement();
@@ -17,7 +17,6 @@ const AdvertisementList = () => {
   const getAdvertisements_ = async () => {
     try {
       const response = await getAdvertisements();
-
       return response;
     } catch (error) {
       console.error(error);
@@ -28,67 +27,76 @@ const AdvertisementList = () => {
   const result = useQuery({ queryKey: ['advertisements'], queryFn: getAdvertisements_ });
 
   return (
-    <Col md={8}>
-      <Card className='mt-3'>
-        <Card.Body className="mb-n3 border-last-none">
-        <Row className="g-0 h-100 align-items-center mb-3">
-          <Col xs="auto" className="pe-2">
-            <div className="bg-gradient-light sh-5 sw-5 rounded-xl d-flex justify-content-center align-items-center">
-              <CsLineIcons icon="notification" className="text-white" />
-            </div>
-          </Col>
-          <Col>
-            <Row className="gx-2 d-flex align-content-center">
-              <Col xs="12" className="col-12 d-flex">
-                <div className="d-flex align-items-center small-title fw-bold">Seus anúncios</div>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
+    <Col xs={12} md={8} className="mx-auto">
+      <Card className="mt-3">
+        <Card.Body>
+          <Row className="g-0 align-items-center mb-3">
+            <Col xs="auto" className="pe-2">
+              <div className="bg-gradient-light sh-5 sw-5 rounded-xl d-flex justify-content-center align-items-center">
+                <CsLineIcons icon="notification" className="text-white" />
+              </div>
+            </Col>
+            <Col>
+              <h5 className="fw-bold mb-0 text-md-start">Seus anúncios</h5>
+            </Col>
+          </Row>
           {result.isLoading ? (
             <div className="sh-20 d-flex align-items-center justify-content-center">
               <StaticLoading />
             </div>
           ) : result.isError ? (
-            <div className="sh-20 d-flex align-items-center justify-content-center">Ocorreu um erro ao buscar os anúncios</div>
+            <div className="sh-20 d-flex align-items-center justify-content-center text-danger">
+              Ocorreu um erro ao buscar os anúncios
+            </div>
           ) : !result.data || result.data.length === 0 ? (
-            <div className="sh-20 d-flex align-items-center justify-content-center">Você ainda não possui anúncios 🌶️</div>
+            <div className="sh-20 d-flex align-items-center justify-content-center text-muted">
+              Você ainda não possui anúncios 🌶️
+            </div>
           ) : (
             result.data?.map((advertisement) => (
-              <div className="border-bottom border-separator-light mb-2 pb-2">
-                <Row className="g-0 sh-12">
-                  <Col xs="auto">
-                    <img src={advertisement.photos[0]?.photo_url ?? '/img/profile/profile-6.webp'} className="card-img rounded-xl sh-12 sw-12" alt="thumb" />
+              <div key={advertisement.advertisement_id} className="border-bottom border-separator-light mb-3 pb-3">
+                <Row className="g-0">
+                  <Col xs="auto" className="me-2">
+                    <img
+                      src={advertisement.photos[0]?.photo_url ?? '/img/profile/profile-6.webp'}
+                      className="card-img rounded-xl sh-12 sw-12"
+                      alt="thumb"
+                      style={{ maxWidth: '100%', height: 'auto' }}
+                    />
                   </Col>
                   <Col>
-                    <div className="d-flex flex-row pt-0 pb-0 ps-3 pe-0 h-100 align-items-center justify-content-between">
-                      <div className="d-flex flex-column">
-                        <h5 className="fw-bold mb-0 text-alternative">{advertisement.title} | <Badge className="me-1">{AdvertisementSubscriptionCycleLabels[advertisement.cycle]}</Badge></h5>
-                        <div>
-                          {' '}
-                          <div>
-                            <div>
-                              <small className="me-1 mb-0">Data da criação: {convertIsoDateStringToBrDateString(advertisement.date_of_creation)}</small>
-                            </div>
-                            <div>
-                              {!advertisement.payments.filter((payment) => payment.status === 'CONFIRMED').length ? (
-                                <Button variant="warning" size="sm" className="me-1 btn-icon mt-1" as="a" href={advertisement.paymentLink} target="_blank">
-                                  Pagamento pendente clique para pagar
-                                  <CsLineIcons icon="clock" className="ms-1" size={12} />
-                                </Button>
-                              ) : null}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="d-flex">
-                        <Link to={`${appRoot}/advertisement/edit/${advertisement.advertisement_id}`} className="btn btn-outline-secondary btn-sm ms-1">
+                    <div className="d-flex flex-column h-100">
+                      <h6 className="fw-bold mb-1 text-alternative">
+                        {advertisement.title}{' '}
+                        <Badge className="me-1">{AdvertisementSubscriptionCycleLabels[advertisement.cycle]}</Badge>
+                      </h6>
+                      <small className="text-muted">
+                        Data da criação: {convertIsoDateStringToBrDateString(advertisement.date_of_creation)}
+                      </small>
+                      {!advertisement.payments.filter((payment) => payment.status === 'CONFIRMED').length && (
+                        <Button
+                          variant="warning"
+                          size="sm"
+                          className="mt-2 w-50"
+                          as="a"
+                          href={advertisement.paymentLink}
+                          target="_blank"
+                        >
+                          Pagar
+                          <CsLineIcons icon="money" className="ms-1" size={12} />
+                        </Button>
+                      )}
+                      <div className="d-flex mt-2">
+                        <Link
+                          to={`${appRoot}/advertisement/edit/${advertisement.advertisement_id}`}
+                          className="btn btn-outline-secondary btn-sm me-2"
+                        >
                           Editar
                         </Link>
                         <Button
                           variant="outline-secondary"
                           size="sm"
-                          className="btn-icon btn-icon-only ms-1"
+                          className="btn-icon btn-icon-only"
                           onClick={() => handleSelectAdvertisementToRemove(advertisement)}
                         >
                           <CsLineIcons icon="bin" />
@@ -100,7 +108,7 @@ const AdvertisementList = () => {
               </div>
             ))
           )}
-          <div className="mb-2 mt-3 text-center">
+          <div className="text-center mt-3">
             <Link to={`${appRoot}/advertisement/create`} className="btn btn-primary">
               Criar um novo anúncio
             </Link>
