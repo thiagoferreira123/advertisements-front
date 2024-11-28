@@ -9,6 +9,8 @@ interface DropzoneComponentProps {
   name: string;
   endpoint: string;
   placeholder?: string;
+  accept?: string;
+  maxSizeBytes?: number;
   previewComponent?: ({ meta, fileWithMeta }: {
     meta: any;
     fileWithMeta: any;
@@ -16,7 +18,7 @@ interface DropzoneComponentProps {
   onChange: (_name: string, _value: string) => void;
 }
 
-const DropzoneComponent = ({name, endpoint, placeholder, previewComponent, onChange}: DropzoneComponentProps) => {
+const DropzoneComponent = ({name, endpoint, placeholder, accept, maxSizeBytes, previewComponent, onChange}: DropzoneComponentProps) => {
   const uploaderRef = useRef(null);
 
   const handleChangeStatus = (file: IFileWithMeta, status: StatusValue) => {
@@ -66,8 +68,8 @@ const DropzoneComponent = ({name, endpoint, placeholder, previewComponent, onCha
       getUploadParams={getUploadParams}
       submitButtonDisabled
       maxFiles={1}
-      accept="image/*, application/pdf"
-      maxSizeBytes={16 * 1024 * 1024} // 16 MB
+      accept={accept ? accept : "image/*, application/pdf"}
+      maxSizeBytes={maxSizeBytes ? maxSizeBytes : 16 * 1024 * 1024} // 16 MB
       inputWithFilesContent={null}
       classNames={{ inputLabelWithFiles: defaultClassNames.inputLabel }}
       inputContent={placeholder ? placeholder : "Enviar foto"}

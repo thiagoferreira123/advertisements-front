@@ -56,6 +56,8 @@ export interface Advertisement {
   photos: AdvertisementPhotosFormValues[];
   videos: AdvertisementVideosFormValues[];
   audio_url: string;
+  comparison_video: string;
+  main_photo: string;
 }
 
 export interface Payment {
@@ -104,6 +106,8 @@ export interface AdvertisementFormValues {
   photos: AdvertisementPhotosFormValues[];
   videos: AdvertisementVideosFormValues[];
   audio_url: string;
+  comparison_video: string;
+  main_photo: string;
 }
 
 export interface AdvertisementPhotosFormValues {

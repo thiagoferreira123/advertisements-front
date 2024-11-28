@@ -28,6 +28,7 @@ import { useReactMediaRecorder } from 'react-media-recorder';
 import { AdvertisementFormValues, AdvertisementPhotosFormValues, AdvertisementSubscriptionCycle, AdvertisementVideosFormValues } from '../hook/types';
 import { useAdvertisement } from '../hook';
 import api from '@/services/useAxios';
+import DropzoneComponent from '@/components/DropzoneComponent';
 
 const EditAdvertisement: React.FC = () => {
   const { id } = useParams();
@@ -130,6 +131,24 @@ const EditAdvertisement: React.FC = () => {
     }, []);
 
     formik.setFieldValue(`videos`, combinedUrls);
+  };
+
+  const handleClickRemoveMainPhoto = async () => {
+    try {
+      setIsRemovingPhotoUrls((prev) => [...prev, values.main_photo]);
+
+      await api.delete('advertisements/main-photo', {
+        data: {
+          url: values.main_photo,
+        },
+      });
+
+      setFieldValue('main_photo', '');
+    } catch (error) {
+      console.error('Error removing main photo:', error);
+    } finally {
+      setIsRemovingPhotoUrls((prev) => prev.filter((key) => key !== values.main_photo));
+    }
   };
 
   const handleClickRemovePhoto = async (response: string) => {
@@ -254,6 +273,24 @@ const EditAdvertisement: React.FC = () => {
       console.error('Error removing audio:', error);
     } finally {
       setIsRemovingAudioUrls((prev) => prev.filter((key) => key !== audioUrl));
+    }
+  };
+
+  const handleClickRemoveComparisonVideo = async (comparisonVideoUrl: string) => {
+    try {
+      setIsRemovingVideoUrls((prev) => [...prev, comparisonVideoUrl]);
+
+      await api.delete('advertisements/comparison-video', {
+        data: {
+          url: comparisonVideoUrl,
+        },
+      });
+
+      setFieldValue('comparison_video', '');
+    } catch (error) {
+      console.error('Error removing comparison video:', error);
+    } finally {
+      setIsRemovingVideoUrls((prev) => prev.filter((key) => key !== comparisonVideoUrl));
     }
   };
 
@@ -449,6 +486,59 @@ const EditAdvertisement: React.FC = () => {
                   </Form.Control.Feedback>
                 </Form.Group>
               ))}
+
+              {/* Video de comparação */}
+              <Col md="12" className="mt-3">
+                <h5 className="fw-bold text-alternate">Video de comparação</h5>
+
+                {!values.comparison_video ? (
+                  <>
+                    <DropzoneComponent
+                      endpoint="/advertisements/comparison-video"
+                      accept="video/*"
+                      maxSizeBytes={200 * 1024 * 1024} // 200 MB
+                      name="comparison_video"
+                      onChange={setFieldValue}
+                      placeholder="Enviar video de comparação"
+                    />
+                    <Form.Control.Feedback type="invalid" className="d-block">
+                      {getIn(errors, 'videos')}
+                    </Form.Control.Feedback>
+                  </>
+                ) : (
+                  <Row className="mt-3">
+                    {values.comparison_video && (
+                      <Col md="3" className="mb-3">
+                        <Card className="border">
+                          {/* <Card.Img variant="top" src={value} className="img-fluid sh-20" /> */}
+                          <video src={values.comparison_video} className="img-fluid sh-20" controls />
+                          <Card.Body className="d-flex justify-content-between align-items-center p-2">
+                            <div>
+                              <a
+                                href={values.comparison_video}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-outline-primary btn-icon btn-icon-only me-2"
+                              >
+                                <CsLineIcons icon="eye" />
+                              </a>
+                              <AsyncButton
+                                loadingText=" "
+                                isSaving={isRemovingVideoUrls.includes(values.comparison_video)}
+                                variant="outline-primary"
+                                onClickHandler={() => handleClickRemoveComparisonVideo(values.comparison_video)}
+                                className="btn-icon btn-icon-only"
+                              >
+                                <CsLineIcons icon="bin" />
+                              </AsyncButton>
+                            </div>
+                          </Card.Body>
+                        </Card>
+                      </Col>
+                    )}
+                  </Row>
+                )}
+              </Col>
             </Card.Body>
           </Card>
 
@@ -567,9 +657,52 @@ const EditAdvertisement: React.FC = () => {
             <Card.Body>
               <h5 className="fw-bold">Mídia</h5>
               <Row className="mb-3 g-3">
-                {/* Fotos */}
+                {/* Foto principal */}
                 <Col md="12">
-                  <h5 className="fw-bold">Fotos</h5>
+                  <h5 className="fw-bold text-alternate">Foto principal</h5>
+                  {!values.main_photo ? (
+                    <>
+                      <DropzoneComponent endpoint="/advertisements/main-photo" onChange={setFieldValue} name="main_photo" />
+                      <Form.Control.Feedback type="invalid" className="d-block">
+                        {getIn(errors, 'main_photo')}
+                      </Form.Control.Feedback>
+                    </>
+                  ) : (
+                    <Row className="mt-3">
+                      <Col md="3" className="mb-3">
+                        <Card className="border">
+                          <Card.Img variant="top" src={values.main_photo} className="img-fluid sh-20" />
+                          <Card.Body className="d-flex justify-content-between align-items-center p-2">
+                            <div>
+                              <a
+                                href={values.main_photo}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-outline-primary btn-icon btn-icon-only me-2"
+                              >
+                                <CsLineIcons icon="eye" />
+                              </a>
+                              <AsyncButton
+                                loadingText=" "
+                                isSaving={isRemovingPhotoUrls.includes(values.main_photo)}
+                                variant="outline-primary"
+                                onClickHandler={handleClickRemoveMainPhoto}
+                                className="btn-icon btn-icon-only"
+                                type="button"
+                              >
+                                <CsLineIcons icon="bin" />
+                              </AsyncButton>
+                            </div>
+                          </Card.Body>
+                        </Card>
+                      </Col>
+                    </Row>
+                  )}
+                </Col>
+
+                {/* Outras fotos */}
+                <Col md="12">
+                  <h5 className="fw-bold text-alternate">Outras fotos</h5>
                   <MultipleDropzoneComponent
                     endpoint="/advertisements/image"
                     onChange={handleChangeMultiplePhotos}
@@ -772,6 +905,8 @@ const initialValues: AdvertisementFormValues = {
   photos: [],
   videos: [],
   audio_url: '',
+  comparison_video: '',
+  main_photo: '',
 };
 
 const validationSchema = Yup.object().shape({
