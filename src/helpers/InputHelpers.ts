@@ -18,6 +18,19 @@ export const htmlToPlainText = (html: string) => {
   return plainText;
 }
 
+export const formatDecimal = (val: string): string => {
+  if (val.length === 1 && val === '0') {
+    val = '';
+  }
+
+  // Add the dot after the first digit
+  if (val.length === 1 && !val.includes('.')) {
+    val += '.';
+  }
+
+  return (val);
+};
+
 export const regexNumber = (value: string) => {
   return value.replace(/[^0-9]/g, '');
 }

@@ -32,6 +32,7 @@ import { services_offered_and_not_offered } from './constants/services_offered_a
 import { working_hours } from './constants/working_hours';
 import { valueFieldOptions } from './constants/values';
 import { payment_methods } from './constants/payment_methods';
+import { formatDecimal } from '@/helpers/InputHelpers';
 
 const CreateAdvertisement: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
@@ -270,6 +271,11 @@ const CreateAdvertisement: React.FC = () => {
     } finally {
       setIsRemovingVideoUrls((prev) => prev.filter((key) => key !== comparisonVideoUrl));
     }
+  };
+
+  const handleChangeHeight = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const value = formatDecimal(event.target.value);
+    setFieldValue('physical_characteristics.Altura', value);
   };
 
   const formik = useFormik<AdvertisementFormValues>({ initialValues, validationSchema, onSubmit });
@@ -761,30 +767,44 @@ const CreateAdvertisement: React.FC = () => {
                 <Form.Group key={characteristicName}>
                   <Form.Label className="fw-bold text-alternate">{characteristicName}</Form.Label>
                   <div>
-                    {options.map((option) => {
-                      const isSelected = values.physical_characteristics[characteristicName]?.includes(option);
-                      return (
-                        <Button
-                          key={option}
-                          variant={isSelected ? 'primary' : 'outline-primary'}
-                          onClick={() => {
-                            const selectedOptions = values.physical_characteristics[characteristicName] || [];
-                            if (selectedOptions.includes(option)) {
-                              setFieldValue(
-                                `physical_characteristics.${characteristicName}`,
-                                selectedOptions.filter((item) => item !== option)
-                              );
-                            } else {
-                              setFieldValue(`physical_characteristics.${characteristicName}`, [...selectedOptions, option]);
-                            }
-                          }}
-                          className={errors.physical_characteristics && errors.physical_characteristics[characteristicName] ? 'is-invalid' : ''}
-                          style={{ margin: '0 5px 5px 0' }}
-                        >
-                          {option}
-                        </Button>
-                      );
-                    })}
+                    {['Altura', 'Peso'].includes(characteristicName) ? (
+                      <Form.Control
+                        type="text"
+                        name={`physical_characteristics.${characteristicName}`}
+                        placeholder={characteristicName}
+                        value={getIn(values, `physical_characteristics.${characteristicName}`)}
+                        onChange={(e) =>
+                          characteristicName === 'Altura' ? handleChangeHeight(e) : setFieldValue(`physical_characteristics.${characteristicName}`, e.target.value)
+                        }
+                        onBlur={handleBlur}
+                        className="form-control"
+                      />
+                    ) : (
+                      options.map((option) => {
+                        const isSelected = values.physical_characteristics[characteristicName]?.includes(option);
+                        return (
+                          <Button
+                            key={option}
+                            variant={isSelected ? 'primary' : 'outline-primary'}
+                            onClick={() => {
+                              const selectedOptions = values.physical_characteristics[characteristicName] || [];
+                              if (selectedOptions.includes(option)) {
+                                setFieldValue(
+                                  `physical_characteristics.${characteristicName}`,
+                                  selectedOptions.filter((item) => item !== option)
+                                );
+                              } else {
+                                setFieldValue(`physical_characteristics.${characteristicName}`, [...selectedOptions, option]);
+                              }
+                            }}
+                            className={errors.physical_characteristics && errors.physical_characteristics[characteristicName] ? 'is-invalid' : ''}
+                            style={{ margin: '0 5px 5px 0' }}
+                          >
+                            {option}
+                          </Button>
+                        );
+                      })
+                    )}
                   </div>
                   <Form.Control.Feedback type="invalid">
                     {errors.physical_characteristics && errors.physical_characteristics[characteristicName]}
