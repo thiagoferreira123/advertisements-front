@@ -86,7 +86,7 @@ const UploadCoverPhotoModal = () => {
               <div className="position-relative">
                 {/* Profile Image */}
                 <img
-                  className="w-100 sh-20 img-fluid"
+                  className="w-100 sh-20 img-fluid rounded-sm"
                   src={values.cover}
                   alt="Avatar"
                 />

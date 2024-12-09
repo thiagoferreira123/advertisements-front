@@ -1,4 +1,4 @@
-import { DIMENSION, MENU_BEHAVIOUR, MENU_PLACEMENT } from '/src/constants';
+import { DIMENSION, MENU_BEHAVIOUR, MENU_PLACEMENT } from '@/constants';
 // Decides which type of menu to add based on the parameters or the current window size.
 // placementStatus:
 // 1 {selected: 'horizontal',  dimension: 'mobile',         html-data: 'horizontal', view: 'vertical'}

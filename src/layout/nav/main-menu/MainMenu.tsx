@@ -2,11 +2,11 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
-import { getMenuItems } from '../../../routing/helper';
-import { useWindowSize } from '../../../hooks/useWindowSize';
-import { useWindowScroll } from '../../../hooks/useWindowScroll';
-import routesAndMenuItems from '../../../routes';
-import { layoutShowingNavMenu } from '../../../layout/layoutSlice';
+import { getMenuItems } from '@/routing/helper';
+import { useWindowSize } from '@/hooks/useWindowSize';
+import { useWindowScroll } from '@/hooks/useWindowScroll';
+import routesAndMenuItems from '@/routes';
+import { layoutShowingNavMenu } from '@/layout/layoutSlice';
 import MainMenuItems from './MainMenuItems';
 import {
   menuChangeAttrMenuAnimate,
@@ -18,9 +18,9 @@ import {
   menuChangePlacementStatus,
 } from './menuSlice';
 import { checkBehaviour, checkPlacement, isDeeplyDiffBehaviourStatus, isDeeplyDiffPlacementStatus } from './helper';
-import { MENU_BEHAVIOUR, MENU_PLACEMENT } from '../../../constants';
-import { useAuth } from '../../../pages/Auth/Login/hook';
-import { Role } from '../../../pages/Auth/Login/hook/types';
+import { MENU_BEHAVIOUR, MENU_PLACEMENT } from '@/constants';
+import { useAuth } from '@/pages/Auth/Login/hook';
+import { Role } from '@/pages/Auth/Login/hook/types';
 
 const MainMenu = () => {
   const dispatch = useDispatch();

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Col, Form, Row, Card } from 'react-bootstrap';
+import { Col, Form, Row, Card, Button } from 'react-bootstrap';
 import { getIn, useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -7,32 +7,33 @@ import { IFileWithMeta } from 'react-dropzone-uploader';
 import InputMask from 'react-input-mask';
 import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
+import { useReactMediaRecorder } from 'react-media-recorder';
+import { useParams } from 'react-router-dom';
+import { AxiosError } from 'axios';
 
 import CsLineIcons from '@/cs-line-icons/CsLineIcons';
 import MultipleDropzoneComponent from '@/components/MultipleDropzoneComponent';
 import AsyncButton from '@/components/AsyncButton';
 import { notify } from '@/components/toast/NotificationIcon';
-import { AxiosError } from 'axios';
 import BasicSelect from '@/components/BasicSelect';
 import { formatCurrency } from '@/helpers/GenericScripts';
-import { useParams } from 'react-router-dom';
 import { AppException } from '@/helpers/ErrorHelpers';
 import StaticLoading from '@/components/loading/StaticLoading';
+import api from '@/services/useAxios';
+import DropzoneComponent from '@/components/DropzoneComponent';
+import { formatDecimal } from '@/helpers/InputHelpers';
+
 import { cities, states } from '../CreateAdvertisement/constants/cities_and_states';
 import { physical_characteristics } from '../CreateAdvertisement/constants/physical_characteristics';
 import { payment_methods } from '../CreateAdvertisement/constants/payment_methods';
 import { services_offered_and_not_offered } from '../CreateAdvertisement/constants/services_offered_and_not_offered';
 import { valueFieldOptions } from '../CreateAdvertisement/constants/values';
 import { working_hours } from '../CreateAdvertisement/constants/working_hours';
-import { useReactMediaRecorder } from 'react-media-recorder';
 import { AdvertisementFormValues, AdvertisementPhotosFormValues, AdvertisementSubscriptionCycle, AdvertisementVideosFormValues } from '../hook/types';
 import { useAdvertisement } from '../hook';
-import api from '@/services/useAxios';
-import DropzoneComponent from '@/components/DropzoneComponent';
 
 const EditAdvertisement: React.FC = () => {
   const { id } = useParams();
-  const queryClient = useQueryClient();
 
   const [isSaving, setIsSaving] = useState(false);
   const [isSendingAudio, setIsSendingAudio] = useState(false);
@@ -45,7 +46,7 @@ const EditAdvertisement: React.FC = () => {
 
   const { updateAdvertisement, getAdvertisement } = useAdvertisement();
 
-  const { status, startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({
+  const { status, startRecording, stopRecording } = useReactMediaRecorder({
     audio: true,
     onStop: async (blobUrl, blob) => {
       try {
@@ -135,7 +136,7 @@ const EditAdvertisement: React.FC = () => {
 
   const handleClickRemoveMainPhoto = async () => {
     try {
-      setIsRemovingPhotoUrls((prev) => [...prev, values.main_photo]);
+      setIsRemovingPhotoUrls((prev) => [...prev, values.main_photo ?? '']);
 
       await api.delete('advertisements/main-photo', {
         data: {
@@ -294,6 +295,11 @@ const EditAdvertisement: React.FC = () => {
     }
   };
 
+  const handleChangeHeight = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const value = formatDecimal(event.target.value);
+    setFieldValue('physical_characteristics.Altura', value);
+  };
+
   const formik = useFormik<AdvertisementFormValues>({ initialValues, validationSchema, onSubmit });
 
   const { values, touched, errors, handleSubmit, handleChange, handleBlur, setFieldValue, setValues } = formik;
@@ -323,7 +329,7 @@ const EditAdvertisement: React.FC = () => {
                 {/* Título */}
                 <Col md="12">
                   <Form.Group className="form-group position-relative tooltip-end-top">
-                    <Form.Label className="fw-bold">Titulo do anúncio</Form.Label>
+                    <Form.Label className="fw-bold text-alternate">Titulo do anúncio</Form.Label>
                     <Form.Control type="text" name="title" onChange={handleChange} value={values.title} isInvalid={!!errors.title && touched.title} />
                     <Form.Control.Feedback type="invalid">{errors.title}</Form.Control.Feedback>
                   </Form.Group>
@@ -332,7 +338,7 @@ const EditAdvertisement: React.FC = () => {
                 {/* Descrição */}
                 <Col md="12">
                   <Form.Group className="form-group position-relative tooltip-end-top">
-                    <Form.Label className="fw-bold">Descrição</Form.Label>
+                    <Form.Label className="fw-bold text-alternate">Descrição</Form.Label>
                     <Form.Control
                       as="textarea"
                       rows={3}
@@ -348,7 +354,7 @@ const EditAdvertisement: React.FC = () => {
                 {/* Estado */}
                 <Col md="6">
                   <Form.Group className="form-group position-relative tooltip-end-top">
-                    <Form.Label className="fw-bold">Estado</Form.Label>
+                    <Form.Label className="fw-bold text-alternate">Estado</Form.Label>
                     <BasicSelect
                       options={states.map((state) => ({ label: state.name, value: state.id.toString() }))}
                       value={values.state}
@@ -362,7 +368,7 @@ const EditAdvertisement: React.FC = () => {
                 {/* Cidade */}
                 <Col md="6">
                   <Form.Group className="form-group position-relative tooltip-end-top">
-                    <Form.Label className="fw-bold">Cidade</Form.Label>
+                    <Form.Label className="fw-bold text-alternate">Cidade</Form.Label>
                     <BasicSelect
                       options={cities.filter((city) => city.state_id === Number(values.state)).map((city) => ({ label: city.name, value: city.id.toString() }))}
                       value={values.city}
@@ -374,80 +380,61 @@ const EditAdvertisement: React.FC = () => {
                 </Col>
               </Row>
 
-              {/* <Row className="mb-3 g-3">
-                <Col md="4">
-                  <Form.Group className="form-group position-relative tooltip-end-top">
-                    <Form.Label className="fw-bold">Disponibilidade de horário</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="availability"
-                      placeholder="Exemplo: das 10 ás 22 ou 24h"
-                      onChange={handleChange}
-                      value={values.availability}
-                      isInvalid={!!errors.availability && touched.availability}
-                    />
-                    <Form.Control.Feedback type="invalid">{errors.availability}</Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-                <Col md="4">
-                  <Form.Group className="form-group position-relative tooltip-end-top">
-                    <Form.Label className="fw-bold">Idade</Form.Label>
-                    <Form.Control type="number" name="age" onChange={handleChange} value={values.age} isInvalid={!!errors.age && touched.age} />
-                    <Form.Control.Feedback type="invalid">{errors.age}</Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-              </Row> */}
-
               <Row className="mb-3 g-3">
                 <Col md="12">
                   <Form.Group>
-                    <Form.Label className="fw-bold">Locais de atendimento</Form.Label>
-                    {['Casa', 'Consultório', 'Meu local'].map((option) => (
-                      <Form.Check
-                        key={option}
-                        label={option}
-                        value={option}
-                        checked={values.locations.includes(option)}
-                        onChange={() => handleCheckboxChange('locations', option)}
-                        isInvalid={!!errors.locations && touched.locations}
-                        className={!!errors.locations ? 'is-invalid' : ''}
-                      />
-                    ))}
-                    <Form.Control.Feedback type="invalid">{errors.locations}</Form.Control.Feedback>
+                    <Form.Label className="fw-bold text-alternate">Locais de atendimento</Form.Label>
+                    <div className="d-flex flex-wrap">
+                      {['Casa', 'Consultório', 'Meu local'].map((option) => (
+                        <Button
+                          key={option}
+                          variant={values.locations.includes(option) ? 'primary' : 'outline-primary'}
+                          onClick={() => handleCheckboxChange('locations', option)}
+                          className="me-2 mb-2"
+                        >
+                          {option}
+                        </Button>
+                      ))}
+                    </div>
+                    {errors.locations && touched.locations && <div className="text-danger">{errors.locations}</div>}
                   </Form.Group>
                 </Col>
+
                 <Col md="12">
                   <Form.Group>
-                    <Form.Label className="fw-bold">Categoria</Form.Label>
-                    {['Homem', 'Mulher', 'Crianças'].map((option) => (
-                      <Form.Check
-                        key={option}
-                        label={option}
-                        value={option}
-                        checked={values.categories.includes(option)}
-                        onChange={() => handleCheckboxChange('categories', option)}
-                        isInvalid={!!errors.categories && touched.categories}
-                        className={!!errors.categories ? 'is-invalid' : ''}
-                      />
-                    ))}
-                    <Form.Control.Feedback type="invalid">{errors.categories}</Form.Control.Feedback>
+                    <Form.Label className="fw-bold text-alternate">Categoria</Form.Label>
+                    <div className="d-flex flex-wrap">
+                      {['Homem', 'Mulher', 'Crianças'].map((option) => (
+                        <Button
+                          key={option}
+                          variant={values.categories.includes(option) ? 'primary' : 'outline-primary'}
+                          onClick={() => handleCheckboxChange('categories', option)}
+                          className="me-2 mb-2"
+                        >
+                          {option}
+                        </Button>
+                      ))}
+                    </div>
+                    {errors.categories && touched.categories && <div className="text-danger">{errors.categories}</div>}
                   </Form.Group>
                 </Col>
+
                 <Col md="12">
                   <Form.Group>
-                    <Form.Label className="fw-bold">Público</Form.Label>
-                    {['Homens', 'Mulheres', 'Casal'].map((option) => (
-                      <Form.Check
-                        key={option}
-                        label={option}
-                        value={option}
-                        checked={values.public.includes(option)}
-                        onChange={() => handleCheckboxChange('public', option)}
-                        isInvalid={!!errors.public && touched.public}
-                        className={!!errors.public ? 'is-invalid' : ''}
-                      />
-                    ))}
-                    <Form.Control.Feedback type="invalid">{errors.public}</Form.Control.Feedback>
+                    <Form.Label className="fw-bold text-alternate">Público</Form.Label>
+                    <div className="d-flex flex-wrap">
+                      {['Homens', 'Mulheres', 'Casal'].map((option) => (
+                        <Button
+                          key={option}
+                          variant={values.public.includes(option) ? 'primary' : 'outline-primary'}
+                          onClick={() => handleCheckboxChange('public', option)}
+                          className="me-2 mb-2"
+                        >
+                          {option}
+                        </Button>
+                      ))}
+                    </div>
+                    {errors.public && touched.public && <div className="text-danger">{errors.public}</div>}
                   </Form.Group>
                 </Col>
               </Row>
@@ -457,30 +444,52 @@ const EditAdvertisement: React.FC = () => {
           {/* Características físicas */}
           <Card className="mb-3">
             <Card.Body>
-              <h5 className="fw-bold">Características físicas</h5>
+              <h5 className="fw-bold text-alternate">Características físicas</h5>
               {Object.entries(physical_characteristics).map(([characteristicName, options]) => (
                 <Form.Group key={characteristicName}>
-                  <Form.Label className="fw-bold">{characteristicName}</Form.Label>
-                  {options.map((option) => (
-                    <Form.Check
-                      key={option}
-                      label={option}
-                      value={option}
-                      checked={values.physical_characteristics[characteristicName]?.includes(option) || false}
-                      onChange={() => {
-                        const selectedOptions = values.physical_characteristics[characteristicName] || [];
-                        if (selectedOptions.includes(option)) {
-                          setFieldValue(
-                            `physical_characteristics.${characteristicName}`,
-                            selectedOptions.filter((item) => item !== option)
-                          );
-                        } else {
-                          setFieldValue(`physical_characteristics.${characteristicName}`, [...selectedOptions, option]);
+                  <Form.Label className="fw-bold text-alternate">{characteristicName}</Form.Label>
+                  <div>
+                    {['Altura', 'Peso'].includes(characteristicName) ? (
+                      <Form.Control
+                        type="text"
+                        name={`physical_characteristics.${characteristicName}`}
+                        placeholder={characteristicName}
+                        value={getIn(values, `physical_characteristics.${characteristicName}`)}
+                        onChange={(e) =>
+                          characteristicName === 'Altura'
+                            ? handleChangeHeight(e)
+                            : setFieldValue(`physical_characteristics.${characteristicName}`, e.target.value)
                         }
-                      }}
-                      className={errors.physical_characteristics && errors.physical_characteristics[characteristicName] ? 'is-invalid' : ''}
-                    />
-                  ))}
+                        onBlur={handleBlur}
+                        className="form-control w-50"
+                      />
+                    ) : (
+                      options.map((option) => {
+                        const isSelected = values.physical_characteristics[characteristicName]?.includes(option);
+                        return (
+                          <Button
+                            key={option}
+                            variant={isSelected ? 'primary' : 'outline-primary'}
+                            onClick={() => {
+                              const selectedOptions = values.physical_characteristics[characteristicName] || [];
+                              if (selectedOptions.includes(option)) {
+                                setFieldValue(
+                                  `physical_characteristics.${characteristicName}`,
+                                  selectedOptions.filter((item) => item !== option)
+                                );
+                              } else {
+                                setFieldValue(`physical_characteristics.${characteristicName}`, [...selectedOptions, option]);
+                              }
+                            }}
+                            className={errors.physical_characteristics && errors.physical_characteristics[characteristicName] ? 'is-invalid' : ''}
+                            style={{ margin: '0 5px 5px 0' }}
+                          >
+                            {option}
+                          </Button>
+                        );
+                      })
+                    )}
+                  </div>
                   <Form.Control.Feedback type="invalid">
                     {errors.physical_characteristics && errors.physical_characteristics[characteristicName]}
                   </Form.Control.Feedback>
@@ -490,7 +499,6 @@ const EditAdvertisement: React.FC = () => {
               {/* Video de comparação */}
               <Col md="12" className="mt-3">
                 <h5 className="fw-bold text-alternate">Video de comparação</h5>
-
                 {!values.comparison_video ? (
                   <>
                     <DropzoneComponent
@@ -506,6 +514,7 @@ const EditAdvertisement: React.FC = () => {
                     </Form.Control.Feedback>
                   </>
                 ) : (
+                  /* Display uploaded photos */
                   <Row className="mt-3">
                     {values.comparison_video && (
                       <Col md="3" className="mb-3">
@@ -526,7 +535,7 @@ const EditAdvertisement: React.FC = () => {
                                 loadingText=" "
                                 isSaving={isRemovingVideoUrls.includes(values.comparison_video)}
                                 variant="outline-primary"
-                                onClickHandler={() => handleClickRemoveComparisonVideo(values.comparison_video)}
+                                onClickHandler={() => values.comparison_video && handleClickRemoveComparisonVideo(values.comparison_video)}
                                 className="btn-icon btn-icon-only"
                               >
                                 <CsLineIcons icon="bin" />
@@ -542,23 +551,25 @@ const EditAdvertisement: React.FC = () => {
             </Card.Body>
           </Card>
 
-          {/* Serviços oferecidos e não oferecidos */}
+          {/* Serviços oferecidos */}
           <Card className="mb-3">
             <Card.Body>
-              <h5 className="fw-bold">Serviços oferecidos e não oferecidos</h5>
-              {Object.entries(values.services_offered_and_not_offered).map(([key, service]) => (
-                <Form.Group key={key}>
-                  <Form.Check
-                    type="checkbox"
-                    label={service.service}
-                    checked={service.offered === 'Yes'}
-                    onChange={(e) => {
+              <h5 className="fw-bold text-alternate">Serviços oferecidos</h5>
+              <div className="d-flex flex-wrap">
+                {Object.entries(values.services_offered_and_not_offered).map(([key, service]) => (
+                  <Button
+                    key={key}
+                    variant={service.offered === 'Yes' ? 'primary' : 'outline-primary'}
+                    onClick={() => {
                       // Atualizamos apenas o campo `offered` do serviço correspondente
-                      setFieldValue(`services_offered_and_not_offered.${key}.offered`, e.target.checked ? 'Yes' : '');
+                      setFieldValue(`services_offered_and_not_offered.${key}.offered`, service.offered === 'Yes' ? '' : 'Yes');
                     }}
-                  />
-                </Form.Group>
-              ))}
+                    className="me-2 mb-2" // Adiciona espaçamento entre botões
+                  >
+                    {service.service}
+                  </Button>
+                ))}
+              </div>
             </Card.Body>
           </Card>
 
@@ -566,12 +577,12 @@ const EditAdvertisement: React.FC = () => {
           <Card className="mb-3">
             <Card.Body>
               <h5 className="fw-bold">Horários de expediente</h5>
-              {Object.entries(working_hours).map(([day, times]) => (
+              {Object.entries(working_hours).map(([day]) => (
                 <Form.Group key={day}>
-                  <Form.Label className="fw-bold">{day}</Form.Label>
+                  <Form.Label className="fw-bold text-alternate">{day}</Form.Label>
                   <div className="d-flex">
                     <div className="me-2">
-                      <Form.Label>Início</Form.Label>
+                      <Form.Label className="text-alternate">Início</Form.Label>
                       <InputMask
                         mask="99:99"
                         placeholder="HH:MM"
@@ -579,25 +590,27 @@ const EditAdvertisement: React.FC = () => {
                         onChange={(e) => {
                           setFieldValue(`working_hours.${day}.inicio`, e.target.value);
                         }}
+                        name={`working_hours.${day}.inicio`}
                         onBlur={handleBlur}
                         className="form-control"
                       />
                     </div>
                     <div>
-                      <Form.Label>Fim</Form.Label>
+                      <Form.Label className="text-alternate">Fim</Form.Label>
                       <InputMask
                         mask="99:99"
                         placeholder="HH:MM"
                         value={getIn(values, `working_hours.${day}.fim`)}
                         onChange={(e) => setFieldValue(`working_hours.${day}.fim`, e.target.value)}
+                        name={`working_hours.${day}.fim`}
                         onBlur={handleBlur}
                         className="form-control"
                       />
                     </div>
                   </div>
                   {/* Exemplo de exibição de erros */}
-                  {errors.working_hours && errors.working_hours[day] && touched.working_hours && touched.working_hours[day] && (
-                    <div className="text-danger">{errors.working_hours[day].inicio || errors.working_hours[day].fim}</div>
+                  {getIn(errors, `working_hours.${day}.inicio`) && getIn(touched, `working_hours.${day}.inicio`) && (
+                    <div className="text-danger">{getIn(errors, `working_hours.${day}.inicio`)}</div>
                   )}
                 </Form.Group>
               ))}
@@ -608,46 +621,54 @@ const EditAdvertisement: React.FC = () => {
           <Card className="mb-3">
             <Card.Body>
               <div className="mb-3">
-                <h5 className="fw-bold">Valores</h5>
-                {Object.entries(valueFieldOptions).map(([key, value]) => (
-                  <Form.Group key={key}>
-                    <Form.Label className="fw-bold">{key}</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder={value}
-                      value={getIn(values, `values.${key}`)}
-                      onChange={(e) => {
-                        setFieldValue(`values.${key}`, formatCurrency(e.target.value));
-                      }}
-                      onBlur={handleBlur}
-                      className="form-control"
-                    />
-                    {/* Exemplo de exibição de erros */}
-                    {errors.values && errors.values[key] && touched.values && touched.values[key] && <div className="text-danger">{errors.values[key]}</div>}
-                  </Form.Group>
-                ))}
+                <h5 className="fw-bold text-alternate">Valores</h5>
+                <div className="d-flex flex-wrap align-items-center">
+                  {Object.entries(valueFieldOptions).map(([key, value]) => (
+                    <div key={key} className="me-3 mb-3">
+                      <Form.Group>
+                        <Form.Label className="fw-bold text-alternate">{key}</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder={value}
+                          value={getIn(values, `values.${key}`)}
+                          onChange={(e) => {
+                            setFieldValue(`values.${key}`, formatCurrency(e.target.value));
+                          }}
+                          name={`values.${key}`}
+                          onBlur={handleBlur}
+                          className="form-control"
+                        />
+                        {/* Exemplo de exibição de erros */}
+                        {errors.values && errors.values[key] && touched.values && touched.values[key] && (
+                          <div className="text-danger">{errors.values[key]}</div>
+                        )}
+                      </Form.Group>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div>
-                <h5 className="fw-bold">Formas de pagamento</h5>
-                {payment_methods.map((option) => (
-                  <Form.Check
-                    type="checkbox"
-                    key={option}
-                    label={option}
-                    value={option}
-                    checked={values.payment_methods[option]}
-                    onChange={() => {
-                      const selectedOptions = values.payment_methods || {};
-                      if (selectedOptions[option]) {
-                        setFieldValue(`payment_methods.${option}`, false);
-                      } else {
-                        setFieldValue(`payment_methods.${option}`, true);
-                      }
-                    }}
-                    className={errors.payment_methods ? 'is-invalid' : ''}
-                  />
-                ))}
+                <h5 className="fw-bold text-alternate">Formas de pagamento</h5>
+                <div>
+                  {payment_methods.map((option) => (
+                    <Button
+                      key={option}
+                      variant={values.payment_methods[option] ? 'primary' : 'outline-primary'}
+                      onClick={() => {
+                        const selectedOptions = values.payment_methods || {};
+                        setFieldValue(`payment_methods.${option}`, !selectedOptions[option]);
+                      }}
+                      className={errors.payment_methods ? 'is-invalid mb-2' : 'mb-2'}
+                      style={{ marginRight: '5px' }}
+                    >
+                      {option}
+                    </Button>
+                  ))}
+                </div>
+                {errors.payment_methods && Object.keys(errors.payment_methods).length > 0 && (
+                  <div className="invalid-feedback d-block">{errors.payment_methods[Object.keys(errors.payment_methods)[0]]}</div>
+                )}
               </div>
             </Card.Body>
           </Card>
@@ -881,7 +902,6 @@ const EditAdvertisement: React.FC = () => {
 };
 
 const initialValues: AdvertisementFormValues = {
-  name: '',
   advertiser_id: '',
   cycle: AdvertisementSubscriptionCycle.WEEKLY,
   state: '',
@@ -889,7 +909,6 @@ const initialValues: AdvertisementFormValues = {
   title: '',
   description: '',
   availability: '',
-  price: 0,
   age: 0,
   locations: [],
   categories: [],

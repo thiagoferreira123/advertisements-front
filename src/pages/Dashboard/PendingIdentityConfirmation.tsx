@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 
 const PendingIdentityConfirmation = () => {
   return (
-    <Col md={8} className="my-4">
+    <Col xs={12} md={8} className="my-4 mx-auto">
       <h5 className="fw-bold">Confirmação de identidade</h5>
 
       <Card>
