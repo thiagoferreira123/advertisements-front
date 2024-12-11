@@ -1,18 +1,14 @@
-import React, { LegacyRef, useEffect, useState } from 'react';
+import React, { LegacyRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
 import { Col, Dropdown, Row } from 'react-bootstrap';
-import { MENU_PLACEMENT } from '../../constants';
-import { Role, User } from '../../pages/Auth/Login/hook/types';
-import { Link } from 'react-router-dom';
-import CsLineIcons from '../../cs-line-icons/CsLineIcons';
-import SettingsModal from '../right-buttons/SettingsModal';
-import { useAuth } from '../../pages/Auth/Login/hook';
+
+import { MENU_PLACEMENT } from '@/constants';
+import { User } from '@/pages/Auth/Login/hook/types';
+import CsLineIcons from '@/cs-line-icons/CsLineIcons';
+import { useAuth } from '@/pages/Auth/Login/hook';
+
 import { layoutShowingNavMenu } from '../layoutSlice';
-import api from '../../services/useAxios';
-import { AppException } from '../../helpers/ErrorHelpers';
-import { notify } from '../../components/toast/NotificationIcon';
-import { useQuery } from '@tanstack/react-query';
 
 interface NavUserMenuDropdownToggleProps {
   onClick: (e: React.MouseEvent) => void;
@@ -25,72 +21,9 @@ interface NavUserMenuContentProps {
 }
 
 const NavUserMenuContent = (props: NavUserMenuContentProps) => {
-  const user = useAuth((state) => state.user);
-
-  const [isShowSettingsModal, setIsShowSettingsModal] = useState(false);
-
-  const showSettingsModal = () => {
-    setIsShowSettingsModal(true);
-  };
-
-  const closeSettingsModal = () => {
-    setIsShowSettingsModal(false);
-    document.documentElement.click();
-  };
-
-  const getBillingPortal = async () => {
-    try {
-      const response = await api.get('/payments/get-portal-link'); // Add this line
-
-      return response.data.url; // Add this line
-    } catch (error) {
-      console.error(error);
-      error instanceof AppException && notify(error.message, 'Erro', 'close', 'danger');
-      throw error;
-    }
-  };
-
-  const result = useQuery({
-    queryKey: ['portal-link'],
-    queryFn: getBillingPortal,
-    enabled: !!user?.stripe_customer_id,
-  });
-
   return (
     <div>
-      <Row className="mb-3 ms-0 me-0">
-        <Col xs="12" className="pe-1 ps-1 mb-2">
-          <ul className="list-unstyled">
-            <li>
-              <Link to={'/app/meus-dados'}>
-                <CsLineIcons icon="gear" className="me-2" size={17} /> <span className="align-middle">Meus dados</span>
-              </Link>
-            </li>
-          </ul>
-        </Col>
-        {result.data && <Col xs="12" className="pe-1 ps-1 mb-2">
-          <ul className="list-unstyled">
-            <li>
-              <Link to={result.data}>
-                <CsLineIcons icon="money" className="me-2" size={17} /> <span className="align-middle">Gerenciar assinatura</span>
-              </Link>
-            </li>
-          </ul>
-        </Col>}
-        <Col xs="12" className="pe-1 ps-1 mb-1">
-          <ul className="list-unstyled">
-            <li>
-              <a href="#/!" onClick={showSettingsModal}>
-                <CsLineIcons icon="brush" className="me-2" size={17} /> <span className="align-middle">Preferências de desing</span>
-              </a>
-            </li>
-          </ul>
-        </Col>
-      </Row>
       <Row className="mb-1 ms-0 me-0">
-        <Col xs="12" className="p-1 mb-1 pt-1">
-          <div className="separator-light" />
-        </Col>
 
         <Col xs="6" className="pe-1 ps-1">
           <ul className="list-unstyled">
@@ -102,8 +35,6 @@ const NavUserMenuContent = (props: NavUserMenuContentProps) => {
           </ul>
         </Col>
       </Row>
-
-      <SettingsModal show={isShowSettingsModal} handleClose={closeSettingsModal} />
     </div>
   );
 };
@@ -122,15 +53,15 @@ const NavUserMenuDropdownToggle = React.memo(
         onClick(e);
       }}
     >
-      <img className="profile" alt={user.full_name} src={user?.logo_link ? user?.logo_link : '/img/profile/profile-11.webp'} />
-      <div className="name">{user.full_name}</div>
+      <img className="profile" alt={user.name} src={user?.profile_photo ? user?.profile_photo : '/img/profile/profile-11.webp'} />
+      <div className="name">{user.name}</div>
     </a>
   ))
 );
 
 // Dropdown needs access to the DOM of the Menu to measure it
 const NavUserMenuDropdownMenu = React.memo(
-  React.forwardRef(({ style, className, logout }, ref) => {
+  React.forwardRef(({ style, className, logout }: { style: React.CSSProperties; className: string; logout: () => void }, ref: LegacyRef<HTMLDivElement> | undefined) => {
     return (
       <div ref={ref} style={style} className={classNames('dropdown-menu dropdown-menu-end user-menu wide', className)}>
         <NavUserMenuContent logout={logout} />
@@ -151,15 +82,15 @@ const NavUserMenu = () => {
     behaviourStatus: { behaviourHtmlData },
     attrMobile,
     attrMenuAnimate,
-  } = useSelector((state) => state.menu);
+  } = useSelector((state: any) => state.menu);
 
   const user = useAuth((state) => state.user);
   const isLoggedIn = useAuth((state) => state.isLoggedIn);
 
-  const { color } = useSelector((state) => state.settings);
-  const { showingNavMenu } = useSelector((state) => state.layout);
+  const { color } = useSelector((state: any) => state.settings);
+  const { showingNavMenu } = useSelector((state: any) => state.layout);
 
-  const onToggle = (status, event) => {
+  const onToggle = (status: any, event: any) => {
     if (event && event.stopPropagation) event.stopPropagation();
     else if (event && event.originalEvent && event.originalEvent.stopPropagation) event.originalEvent.stopPropagation();
     dispatch(layoutShowingNavMenu(status ? MENU_NAME : ''));

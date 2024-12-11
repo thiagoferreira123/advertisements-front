@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
-import { MENU_BEHAVIOUR, MENU_PLACEMENT } from '/src/constants';
+import { MENU_BEHAVIOUR, MENU_PLACEMENT } from '@/constants';
 import NavUserMenu from './NavUserMenu';
 import NavIconMenu from './NavIconMenu';
 import MainMenu from './main-menu/MainMenu';
@@ -13,8 +13,8 @@ const DELAY = 80;
 
 const Nav = () => {
   const dispatch = useDispatch();
-  const { navClasses, placementStatus, behaviourStatus, attrMobile, menuPadding } = useSelector((state) => state.menu);
-  const mouseActionTimer = useRef(null);
+  const { navClasses, placementStatus, behaviourStatus, attrMobile, menuPadding } = useSelector((state: any) => state.menu);
+  const mouseActionTimer = useRef<any>(null);
 
   // Vertical menu semihidden state showing
   // Only works when the vertical menu is active and mobile menu closed

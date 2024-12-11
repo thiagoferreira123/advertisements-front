@@ -187,7 +187,6 @@ const enMessages = {
   'menu.controle-financeiro': 'Controle financeiro ',
   'menu.planos': 'Planos',
   // 'menu.admin': 'Admin',
-  // 'menu.meus-dados': 'Meus dados',
   // 'menu.road-map': 'Acompanhar progresso do OdontCloud',
   'menu.site': 'Construtor de site',
   // 'menu.site-agenda': 'Agendamento pelo site',

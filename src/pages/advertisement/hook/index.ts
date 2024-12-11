@@ -23,7 +23,8 @@ export const useAdvertisement = create<AdvertisementStore>(() => ({
     }
   },
   createAdvertisement: async (payload) => {
-    return await api.post('/advertisements', payload);
+    const { data } = await api.post<Advertisement>('/advertisements', payload);
+    return data;
   },
   updateAdvertisement: async (id: string, payload) => {
     return await api.put(`/advertisements/${id}`, payload);

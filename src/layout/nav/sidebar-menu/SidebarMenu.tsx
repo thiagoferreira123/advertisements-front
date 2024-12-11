@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { Col } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-import { getMenuItems } from '/src/routing/helper';
-import routesAndMenuItems from '/src/routes';
+import { getMenuItems } from '@/routing/helper';
+import routesAndMenuItems from '@/routes';
 import SidebarMenuItems from './SidebarMenuItems';
 
 const SidebarMenu = () => {

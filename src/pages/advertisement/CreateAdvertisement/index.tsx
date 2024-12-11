@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Col, Form, Row, Card, Button } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Col, Form, Row, Card, Button, Badge } from 'react-bootstrap';
 import { getIn, useFormik } from 'formik';
 import { AxiosError } from 'axios';
 import * as Yup from 'yup';
@@ -20,6 +20,7 @@ import { formatCurrency } from '@/helpers/GenericScripts';
 import api from '@/services/useAxios';
 
 import {
+  Advertisement,
   AdvertisementFormValues,
   AdvertisementPhotosFormValues,
   AdvertisementSubscriptionCycle,
@@ -32,6 +33,10 @@ import { services_offered_and_not_offered } from './constants/services_offered_a
 import { working_hours } from './constants/working_hours';
 import { valueFieldOptions } from './constants/values';
 import { payment_methods } from './constants/payment_methods';
+import { formatDecimal } from '@/helpers/InputHelpers';
+import { convertIsoDateStringToBrDateString } from '@/helpers/DateHelper';
+import { Link } from 'react-router-dom';
+import { appRoot } from '@/routes';
 
 const CreateAdvertisement: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
@@ -42,6 +47,8 @@ const CreateAdvertisement: React.FC = () => {
   const [isRemovingPhotoUrls, setIsRemovingPhotoUrls] = useState<string[]>([]);
   const [isRemovingVideoUrls, setIsRemovingVideoUrls] = useState<string[]>([]);
   const [isRemovingAudioUrls, setIsRemovingAudioUrls] = useState<string[]>([]);
+
+  const [createdAdvertisement, setCreatedAdvertisement] = useState<Advertisement | null>();
   const { createAdvertisement } = useAdvertisement();
 
   const { status, startRecording, stopRecording } = useReactMediaRecorder({
@@ -74,7 +81,10 @@ const CreateAdvertisement: React.FC = () => {
   const onSubmit = async (values: AdvertisementFormValues) => {
     try {
       setIsSaving(true);
-      await createAdvertisement(values);
+      const createdAdvertisement = await createAdvertisement(values);
+      console.log(createdAdvertisement);
+
+      setCreatedAdvertisement(createdAdvertisement);
 
       notify('Anúncio criado com sucesso', 'Success', 'check-circle', 'success');
     } catch (error) {
@@ -118,7 +128,7 @@ const CreateAdvertisement: React.FC = () => {
 
   const handleClickRemoveMainPhoto = async () => {
     try {
-      setIsRemovingPhotoUrls((prev) => [...prev, values.main_photo]);
+      setIsRemovingPhotoUrls((prev) => [...prev, values.main_photo ?? '']);
 
       await api.delete('advertisements/main-photo', {
         data: {
@@ -272,9 +282,61 @@ const CreateAdvertisement: React.FC = () => {
     }
   };
 
+  const handleChangeHeight = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const value = formatDecimal(event.target.value);
+    setFieldValue('physical_characteristics.Altura', value);
+  };
+
   const formik = useFormik<AdvertisementFormValues>({ initialValues, validationSchema, onSubmit });
 
-  const { values, touched, errors, handleSubmit, handleChange, handleBlur, setFieldValue } = formik;
+  const { values, touched, errors, handleSubmit, handleChange, handleBlur, setFieldValue, resetForm } = formik;
+
+  useEffect(() => {
+    resetForm();
+    setCreatedAdvertisement(null);
+  }, []);
+
+  if (createdAdvertisement) {
+    return (
+      <Col xs={12} md={8} className="mx-auto">
+        <Card className="mt-3">
+          <Card.Body>
+            <div className="border-bottom border-separator-light">
+              <Row className="g-0">
+                <Col xs="auto" className="me-2">
+                  <img
+                    src={createdAdvertisement.photos[0]?.photo_url ?? '/img/profile/profile-6.webp'}
+                    className="card-img rounded-xl sh-10 sw-10"
+                    alt="thumb"
+                    style={{ maxWidth: '100%', height: 'auto' }}
+                  />
+                </Col>
+                <Col>
+                  <div className="d-flex flex-column h-100">
+                    <h6 className="fw-bold mb-1 text-alternative">
+                      {createdAdvertisement.title} <Badge className="me-1">{AdvertisementSubscriptionCycleLabels[createdAdvertisement.cycle]}</Badge>
+                    </h6>
+                    <small className="text-muted">Data da criação: {convertIsoDateStringToBrDateString(createdAdvertisement.date_of_creation)}</small>
+
+                    <div className="d-flex mt-2">
+                      <Button variant="warning" size="sm" className="w-100 me-2" as="a" href={createdAdvertisement.paymentLink} target="_blank">
+                        Pagar
+                        <CsLineIcons icon="money" className="ms-1" size={12} />
+                      </Button>
+
+                      <Link to={appRoot} className="btn btn-outline-secondary btn-sm me-2 w-100">
+                        Voltar ao início
+                      </Link>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+            </div>
+          </Card.Body>
+        </Card>
+      </Col>
+    );
+  }
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -354,96 +416,7 @@ const CreateAdvertisement: React.FC = () => {
                 </Col>
               </Row>
 
-              {/* <Row className="mb-3 g-3">
-                <Col md="4">
-                  <Form.Group className="form-group position-relative tooltip-end-top">
-                    <Form.Label className="fw-bold text-alternate">Disponibilidade de horário</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="availability"
-                      placeholder="Exemplo: das 10 ás 22 ou 24h"
-                      onChange={handleChange}
-                      value={values.availability}
-                      isInvalid={!!errors.availability && touched.availability}
-                    />
-                    <Form.Control.Feedback type="invalid">{errors.availability}</Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-                <Col md="4">
-                  <Form.Group className="form-group position-relative tooltip-end-top">
-                    <Form.Label className="fw-bold text-alternate">Valor R$ (A combinar, deixe 0)</Form.Label>
-                    <Form.Control
-                      type="string"
-                      name="price"
-                      onChange={(e) => setFieldValue('price', formatCurrency(e.target.value))}
-                      value={values.price}
-                      isInvalid={!!errors.price && touched.price}
-                      className={!!errors.price ? 'is-invalid' : ''}
-                    />
-                    <Form.Control.Feedback type="invalid">{errors.price}</Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-                <Col md="4">
-                  <Form.Group className="form-group position-relative tooltip-end-top">
-                    <Form.Label className="fw-bold text-alternate">Idade</Form.Label>
-                    <Form.Control type="number" name="age" onChange={handleChange} value={values.age} isInvalid={!!errors.age && touched.age} />
-                    <Form.Control.Feedback type="invalid">{errors.age}</Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-              </Row> */}
-
               <Row className="mb-3 g-3">
-                {/* <Col md="12">
-                  <Form.Group>
-                    <Form.Label className="fw-bold text-alternate">Locais de atendimento</Form.Label>
-                    {['Casa', 'Consultório', 'Meu local'].map((option) => (
-                      <Form.Check
-                        key={option}
-                        label={option}
-                        value={option}
-                        checked={values.locations.includes(option)}
-                        onChange={() => handleCheckboxChange('locations', option)}
-                        isInvalid={!!errors.locations && touched.locations}
-                        className={!!errors.locations ? 'is-invalid' : ''}
-                      />
-                    ))}
-                    <Form.Control.Feedback type="invalid">{errors.locations}</Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-                <Col md="12">
-                  <Form.Group>
-                    <Form.Label className="fw-bold text-alternate">Categoria</Form.Label>
-                    {['Homem', 'Mulher', 'Crianças'].map((option) => (
-                      <Form.Check
-                        key={option}
-                        label={option}
-                        value={option}
-                        checked={values.categories.includes(option)}
-                        onChange={() => handleCheckboxChange('categories', option)}
-                        isInvalid={!!errors.categories && touched.categories}
-                        className={!!errors.categories ? 'is-invalid' : ''}
-                      />
-                    ))}
-                    <Form.Control.Feedback type="invalid">{errors.categories}</Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-                <Col md="12">
-                  <Form.Group>
-                    <Form.Label className="fw-bold text-alternate">Público</Form.Label>
-                    {['Homens', 'Mulheres', 'Casal'].map((option) => (
-                      <Form.Check
-                        key={option}
-                        label={option}
-                        value={option}
-                        checked={values.public.includes(option)}
-                        onChange={() => handleCheckboxChange('public', option)}
-                        isInvalid={!!errors.public && touched.public}
-                        className={!!errors.public ? 'is-invalid' : ''}
-                      />
-                    ))}
-                    <Form.Control.Feedback type="invalid">{errors.public}</Form.Control.Feedback>
-                  </Form.Group>
-                </Col> */}
                 <Col md="12">
                   <Form.Group>
                     <Form.Label className="fw-bold text-alternate">Locais de atendimento</Form.Label>
@@ -721,39 +694,6 @@ const CreateAdvertisement: React.FC = () => {
           </Card>
 
           {/* Características físicas */}
-          {/* <Card className="mb-3">
-            <Card.Body>
-              <h5 className="fw-bold text-alternate">Características físicas</h5>
-              {Object.entries(physical_characteristics).map(([characteristicName, options]) => (
-                <Form.Group key={characteristicName}>
-                  <Form.Label className="fw-bold text-alternate">{characteristicName}</Form.Label>
-                  {options.map((option) => (
-                    <Form.Check
-                      key={option}
-                      label={option}
-                      value={option}
-                      checked={values.physical_characteristics[characteristicName]?.includes(option) || false}
-                      onChange={() => {
-                        const selectedOptions = values.physical_characteristics[characteristicName] || [];
-                        if (selectedOptions.includes(option)) {
-                          setFieldValue(
-                            `physical_characteristics.${characteristicName}`,
-                            selectedOptions.filter((item) => item !== option)
-                          );
-                        } else {
-                          setFieldValue(`physical_characteristics.${characteristicName}`, [...selectedOptions, option]);
-                        }
-                      }}
-                      className={errors.physical_characteristics && errors.physical_characteristics[characteristicName] ? 'is-invalid' : ''}
-                    />
-                  ))}
-                  <Form.Control.Feedback type="invalid">
-                    {errors.physical_characteristics && errors.physical_characteristics[characteristicName]}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              ))}
-            </Card.Body>
-          </Card> */}
           <Card className="mb-3">
             <Card.Body>
               <h5 className="fw-bold text-alternate">Características físicas</h5>
@@ -761,30 +701,46 @@ const CreateAdvertisement: React.FC = () => {
                 <Form.Group key={characteristicName}>
                   <Form.Label className="fw-bold text-alternate">{characteristicName}</Form.Label>
                   <div>
-                    {options.map((option) => {
-                      const isSelected = values.physical_characteristics[characteristicName]?.includes(option);
-                      return (
-                        <Button
-                          key={option}
-                          variant={isSelected ? 'primary' : 'outline-primary'}
-                          onClick={() => {
-                            const selectedOptions = values.physical_characteristics[characteristicName] || [];
-                            if (selectedOptions.includes(option)) {
-                              setFieldValue(
-                                `physical_characteristics.${characteristicName}`,
-                                selectedOptions.filter((item) => item !== option)
-                              );
-                            } else {
-                              setFieldValue(`physical_characteristics.${characteristicName}`, [...selectedOptions, option]);
-                            }
-                          }}
-                          className={errors.physical_characteristics && errors.physical_characteristics[characteristicName] ? 'is-invalid' : ''}
-                          style={{ margin: '0 5px 5px 0' }}
-                        >
-                          {option}
-                        </Button>
-                      );
-                    })}
+                    {['Altura', 'Peso'].includes(characteristicName) ? (
+                      <Form.Control
+                        type="text"
+                        name={`physical_characteristics.${characteristicName}`}
+                        placeholder={characteristicName}
+                        value={getIn(values, `physical_characteristics.${characteristicName}`)}
+                        onChange={(e) =>
+                          characteristicName === 'Altura'
+                            ? handleChangeHeight(e)
+                            : setFieldValue(`physical_characteristics.${characteristicName}`, e.target.value)
+                        }
+                        onBlur={handleBlur}
+                        className="form-control w-50"
+                      />
+                    ) : (
+                      options.map((option) => {
+                        const isSelected = values.physical_characteristics[characteristicName]?.includes(option);
+                        return (
+                          <Button
+                            key={option}
+                            variant={isSelected ? 'primary' : 'outline-primary'}
+                            onClick={() => {
+                              const selectedOptions = values.physical_characteristics[characteristicName] || [];
+                              if (selectedOptions.includes(option)) {
+                                setFieldValue(
+                                  `physical_characteristics.${characteristicName}`,
+                                  selectedOptions.filter((item) => item !== option)
+                                );
+                              } else {
+                                setFieldValue(`physical_characteristics.${characteristicName}`, [...selectedOptions, option]);
+                              }
+                            }}
+                            className={errors.physical_characteristics && errors.physical_characteristics[characteristicName] ? 'is-invalid' : ''}
+                            style={{ margin: '0 5px 5px 0' }}
+                          >
+                            {option}
+                          </Button>
+                        );
+                      })
+                    )}
                   </div>
                   <Form.Control.Feedback type="invalid">
                     {errors.physical_characteristics && errors.physical_characteristics[characteristicName]}
@@ -831,7 +787,7 @@ const CreateAdvertisement: React.FC = () => {
                                 loadingText=" "
                                 isSaving={isRemovingVideoUrls.includes(values.comparison_video)}
                                 variant="outline-primary"
-                                onClickHandler={() => handleClickRemoveComparisonVideo(values.comparison_video)}
+                                onClickHandler={() => values.comparison_video && handleClickRemoveComparisonVideo(values.comparison_video)}
                                 className="btn-icon btn-icon-only"
                               >
                                 <CsLineIcons icon="bin" />
@@ -847,25 +803,7 @@ const CreateAdvertisement: React.FC = () => {
             </Card.Body>
           </Card>
 
-          {/* Serviços oferecidos e não oferecidos */}
-          {/* <Card className="mb-3">
-            <Card.Body>
-              <h5 className="fw-bold text-alternate">Serviços oferecidos e não oferecidos</h5>
-              {Object.entries(values.services_offered_and_not_offered).map(([key, service]) => (
-                <Form.Group key={key}>
-                  <Form.Check
-                    type="checkbox"
-                    label={service.service}
-                    checked={service.offered === 'Yes'}
-                    onChange={(e) => {
-                      // Atualizamos apenas o campo `offered` do serviço correspondente
-                      setFieldValue(`services_offered_and_not_offered.${key}.offered`, e.target.checked ? 'Yes' : '');
-                    }}
-                  />
-                </Form.Group>
-              ))}
-            </Card.Body>
-          </Card> */}
+          {/* Serviços oferecidos */}
           <Card className="mb-3">
             <Card.Body>
               <h5 className="fw-bold text-alternate">Serviços oferecidos</h5>
@@ -921,8 +859,8 @@ const CreateAdvertisement: React.FC = () => {
                     </div>
                   </div>
                   {/* Exemplo de exibição de erros */}
-                  {errors.working_hours && errors.working_hours[day] && touched.working_hours && touched.working_hours[day] && (
-                    <div className="text-danger">{errors.working_hours[day].inicio || errors.working_hours[day].fim}</div>
+                  {getIn(errors, `working_hours.${day}.inicio`) && getIn(touched, `working_hours.${day}.inicio`) && (
+                    <div className="text-danger">{getIn(errors, `working_hours.${day}.inicio`)}</div>
                   )}
                 </Form.Group>
               ))}
@@ -996,7 +934,6 @@ const CreateAdvertisement: React.FC = () => {
 };
 
 const initialValues: AdvertisementFormValues = {
-  name: '',
   cycle: AdvertisementSubscriptionCycle.WEEKLY,
   advertiser_id: '',
   state: '',
@@ -1004,7 +941,6 @@ const initialValues: AdvertisementFormValues = {
   title: '',
   description: '',
   availability: '',
-  price: 0,
   age: 0,
   locations: [],
   categories: [],

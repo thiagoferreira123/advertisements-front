@@ -6,7 +6,7 @@ export type AdvertisementStore = {
 
   updateAdvertisement: (id: string, values: AdvertisementFormValues) => Promise<void>;
 
-  createAdvertisement: (values: AdvertisementFormValues) => Promise<void>;
+  createAdvertisement: (values: AdvertisementFormValues) => Promise<Advertisement>;
 
   deleteAdvertisement: (id: string, queryClient: QueryClient) => Promise<void>;
 }
@@ -15,15 +15,17 @@ export interface Advertisement {
   advertisement_id: string;
   cycle: AdvertisementSubscriptionCycle;
   advertiser_id: string;
-  name: string;
+  whatsapp: string | null;
+  checked: boolean;
   state: string;
   city: string;
   title: string;
   description: string;
   availability: string;
-  price: number;
+  highlighted: boolean | null;
   age: number;
   paymentLink: string;
+  asaasSubscriptionId: string | null;
   locations: string[];
   categories: string[];
   public: string[];
@@ -43,7 +45,7 @@ export interface Advertisement {
       inicio: string;
       fim: string;
     };
-  };
+  } | null;
   values: {
     [key: string]: string;
   };
@@ -53,11 +55,11 @@ export interface Advertisement {
   payments: Payment[];
   date_of_creation: string;
 
-  photos: AdvertisementPhotosFormValues[];
-  videos: AdvertisementVideosFormValues[];
+  photos: AdvertisementPhoto[];
+  videos: AdvertisementVideo[];
   audio_url: string;
-  comparison_video: string;
-  main_photo: string;
+  comparison_video: string | null;
+  main_photo: string | null;
 }
 
 export interface Payment {
@@ -69,13 +71,11 @@ export interface Payment {
 export interface AdvertisementFormValues {
   advertiser_id: string;
   cycle: AdvertisementSubscriptionCycle;
-  name: string;
   state: string;
   city: string;
   title: string;
   description: string;
   availability: string;
-  price: number;
   age: number;
   locations: string[];
   categories: string[];
@@ -96,7 +96,7 @@ export interface AdvertisementFormValues {
       inicio: string;
       fim: string;
     };
-  };
+  } | null;
   values: {
     [key: string]: string;
   };
@@ -106,12 +106,22 @@ export interface AdvertisementFormValues {
   photos: AdvertisementPhotosFormValues[];
   videos: AdvertisementVideosFormValues[];
   audio_url: string;
-  comparison_video: string;
-  main_photo: string;
+  comparison_video: string | null;
+  main_photo: string | null;
+}
+
+export interface AdvertisementPhoto {
+  id: string;
+  photo_url: string;
 }
 
 export interface AdvertisementPhotosFormValues {
   photo_url: string;
+}
+
+export interface AdvertisementVideo {
+  id: string;
+  video_url: string;
 }
 
 export interface AdvertisementVideosFormValues {

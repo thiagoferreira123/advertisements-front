@@ -63,7 +63,7 @@ const ProfilePhoto = () => {
   }, [user]);
 
   return (
-    <Col md={8}>
+    <Col xs={12} md={8} className="mx-auto">
       <Card className="text-center position-relative">
         <Card.Body className="sh-40 d-flex flex-column justify-content-end align-items-center p-2">
           {user?.cover && <img className="w-100 h-100 img-fluid rounded" src={user.cover} alt="Avatar" />}

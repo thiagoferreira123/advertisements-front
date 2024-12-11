@@ -8,7 +8,6 @@ import layoutReducer from './layout/layoutSlice';
 import langReducer from './lang/langSlice';
 import authReducer from './auth/authSlice';
 import menuReducer from './layout/nav/main-menu/menuSlice';
-import notificationReducer from './layout/nav/notifications/notificationSlice';
 import scrollspyReducer from './components/scrollspy/scrollspySlice';
 
 import contactsReducer from './views/apps/contacts/contactsSlice';
@@ -30,7 +29,6 @@ const rootReducer = combineReducers({
   lang: langReducer,
   auth: authReducer,
   menu: menuReducer,
-  notification: notificationReducer,
   scrollspy: scrollspyReducer,
   contacts: contactsReducer,
   mailbox: mailboxReducer,
